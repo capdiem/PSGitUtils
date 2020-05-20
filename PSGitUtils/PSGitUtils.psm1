@@ -1,3 +1,5 @@
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 $sparkles = [char]::ConvertFromUtf32('0x2728');
 $bug = [char]::ConvertFromUtf32('0x1F41B');
 $boom = [char]::ConvertFromUtf32('0x1F4A5');
