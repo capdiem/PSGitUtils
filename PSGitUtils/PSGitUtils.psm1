@@ -188,9 +188,17 @@ function Invoke-GitHistory {
     [int]$count = 10
   )
 
+  try {
+    $null = Get-Command git -ErrorAction stop
+  }
+  catch {
+    Write-Error 'Could not find Git, please install Git first.'
+    exit
+  }
+
   $arg = '-' + $count.ToString()
 
-  [string[]]$logs = git.ps1 log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit $arg
+  [string[]]$logs = git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit $arg
 
   Invoke-Emojify($logs)
 }
