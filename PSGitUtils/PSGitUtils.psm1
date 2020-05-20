@@ -128,10 +128,10 @@ function Invoke-GitCommit {
 
     $newMessage = $newMessage + $message
 
-    git.ps1 commit -m $newMessage
+    git commit -m $newMessage
   }
   else {
-    git.ps1 commit -m $message
+    git commit -m $message
   }
 
 }
