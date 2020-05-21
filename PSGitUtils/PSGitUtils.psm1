@@ -24,28 +24,28 @@ $truck = [char]::ConvertFromUtf32('0x1F69A');
 $tada = [char]::ConvertFromUtf32('0x1F389');
 
 $dicts = @(
-  @{ code = ':sparkles:'; emoji = $sparkles; type = 'feat:' },
-  @{ code = ':new:'; emoji = $new; type = 'feat:' },
-  @{ code = ':boom:'; emoji = $boom; type = 'feat:' },
-  @{ code = ':bug:'; emoji = $bug; type = 'fix:' },
-  @{ code = ':ok_hand:'; emoji = $ok_hand; type = 'fix:' },
-  @{ code = ':lipstick:'; emoji = $lipstick; type = 'style:' },
-  @{ code = ':speech_balloon:'; emoji = $speech_balloon; type = 'style:' },
-  @{ code = ':art:'; emoji = $art; type = 'style:' },
-  @{ code = ':white_check_mark:'; emoji = $white_check_mark; type = 'test:' },
-  @{ code = ':wrench:'; emoji = $wrench; type = 'chore:' },
-  @{ code = ':arrow_up:'; emoji = $arrow_up; type = 'chore:' },
-  @{ code = ':arrow_down:'; emoji = $arrow_down; type = 'chore:' },
-  @{ code = ':heavy_plus_sign:'; emoji = $heavy_plus_sign; type = 'chore:' },
-  @{ code = ':heavy_minus_sign:'; emoji = $heavy_minus_sign; type = 'chore:' },
-  @{ code = ':see_no_evil:'; emoji = $see_no_evil; type = 'chore:' },
-  @{ code = ':pencil:'; emoji = $pencil; type = 'docs:' },
-  @{ code = ':zap:'; emoji = $zap; type = 'perf:' },
-  @{ code = ':wastebasket:'; emoji = $wastebasket; type = 'remove:' },
-  @{ code = ':fire:'; emoji = $fire; type = 'remove:' },
-  @{ code = ':recycle:'; emoji = $recycle; type = 'refactor:' },
-  @{ code = ':truck:'; emoji = $truck; type = 'refactor:' },
-  @{ code = ':tada:'; emoji = $tada; type = 'init:' }
+  @{ index = -99; code = ':sparkles:'; emoji = $sparkles; type = 'feat:' },
+  @{ index = 0; code = ':new:'; emoji = $new; type = 'feat:' },
+  @{ index = 1; code = ':boom:'; emoji = $boom; type = 'feat:' },
+  @{ index = 2; code = ':bug:'; emoji = $bug; type = 'fix:' },
+  @{ index = 3; code = ':ok_hand:'; emoji = $ok_hand; type = 'fix:' },
+  @{ index = 4; code = ':lipstick:'; emoji = $lipstick; type = 'style:' },
+  @{ index = 5; code = ':speech_balloon:'; emoji = $speech_balloon; type = 'style:' },
+  @{ index = 6; code = ':art:'; emoji = $art; type = 'style:' },
+  @{ index = 7; code = ':white_check_mark:'; emoji = $white_check_mark; type = 'test:' },
+  @{ index = 8; code = ':wrench:'; emoji = $wrench; type = 'chore:' },
+  @{ index = 9; code = ':arrow_up:'; emoji = $arrow_up; type = 'chore:' },
+  @{ index = 10; code = ':arrow_down:'; emoji = $arrow_down; type = 'chore:' },
+  @{ index = 11; code = ':heavy_plus_sign:'; emoji = $heavy_plus_sign; type = 'chore:' },
+  @{ index = 12; code = ':heavy_minus_sign:'; emoji = $heavy_minus_sign; type = 'chore:' },
+  @{ index = 13; code = ':see_no_evil:'; emoji = $see_no_evil; type = 'chore:' },
+  @{ index = 14; code = ':pencil:'; emoji = $pencil; type = 'docs:' },
+  @{ index = 15; code = ':zap:'; emoji = $zap; type = 'perf:' },
+  @{ index = 16; code = ':wastebasket:'; emoji = $wastebasket; type = 'remove:' },
+  @{ index = -16; code = ':fire:'; emoji = $fire; type = 'remove:' },
+  @{ index = 17; code = ':recycle:'; emoji = $recycle; type = 'refactor:' },
+  @{ index = 18; code = ':truck:'; emoji = $truck; type = 'refactor:' },
+  @{ index = 19; code = ':tada:'; emoji = $tada; type = 'init:' }
 )
 
 $GitUtilsConfig = @{
@@ -95,11 +95,12 @@ function Invoke-GitCommit {
   $refactor = New-Object System.Management.Automation.Host.ChoiceDescription "&refactor$recycle", 'Refactoring code.'
   $move = New-Object System.Management.Automation.Host.ChoiceDescription "&move or rename$truck", 'Moving or renaming files.'
   $init = New-Object System.Management.Automation.Host.ChoiceDescription "&init$tada", 'Initial commit.'
+  $plain = New-Object System.Management.Automation.Host.ChoiceDescription "p&lain", 'No emoji, no type.'
 
   $options = [System.Management.Automation.Host.ChoiceDescription[]](
     $feat,
-    $fix,
     $breakingChanges,
+    $fix,
     $ok,
     $style,
     $typo,
@@ -116,20 +117,23 @@ function Invoke-GitCommit {
     $remove,
     $refactor,
     $move,
-    $init
+    $init,
+    $plain
   )
 
-  $chooseIndex = $Host.UI.PromptForChoice($title, $promptMessage, $options, 1)
+  $chooseIndex = $Host.UI.PromptForChoice($title, $promptMessage, $options, 2)
 
-  if ($chooseIndex -le $dicts.Length) {
+  if ($chooseIndex -lt $dicts.Length - 1) {
     [string]$newMessage
 
+    $dict = $dicts.Where( { $_.index -eq $chooseIndex }, 'First')
+
     if ($GitUtilsConfig.Emoji) {
-      $newMessage = $dicts[$chooseIndex].code + ' '
+      $newMessage = $dict.code + ' '
     }
 
     if ($GitUtilsConfig.Type) {
-      $newMessage = $newMessage + $dicts[$chooseIndex].type + ' '
+      $newMessage = $newMessage + $dict.type + ' '
     }
 
     $newMessage = $newMessage + $message
@@ -171,7 +175,7 @@ function Invoke-Emojify {
 
       foreach ($item in $matches) {
         $dict = $dicts.Where( { $_.code -eq $item }, 'First')
-        $message = $message -replace($item, $dict.emoji)
+        $message = $message -replace ($item, $dict.emoji)
       }
 
       $message
