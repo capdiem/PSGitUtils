@@ -36,3 +36,5 @@ Providers emoji supports for Git commit and Git log.
 - [Gitmoji](https://gitmoji.carloscuesta.me/)
 
 - [Semantic Commit Messages](https://seesparkbox.com/foundry/semantic_commit_messages)
+
+- [git commit emoji 使用指南](https://github.com/liuchengxu/git-commit-emoji-cn)
