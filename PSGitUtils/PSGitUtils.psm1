@@ -154,25 +154,22 @@ function Invoke-Emojify {
       ValueFromPipelineByPropertyName = $True
     )]
     [string[]]
-    $Messages
+    $messages
   )
 
   process {
-    foreach ($message in $Messages) {
+    foreach ($message in $messages) {
       if ([string]::IsNullOrEmpty($message)) {
         continue;
       }
 
       $regex = '\:[a-z]\w*(\d|[a-z])*\:'
-      if ($message -match $regex) {
-        $matched = [regex]::match($message, $regex).Value
 
-        foreach ($table in $dicts) {
-          if ($table.code -eq $matched) {
-            $message = $message.Replace($matched, $table.emoji)
-            break
-          }
-        }
+      $matches = ($message | Select-String $regex -AllMatches).Matches.Value
+
+      foreach ($item in $matches) {
+        $dict = $dicts.Where( { $_.code -eq $item }, 'First')
+        $message = $message -replace($item, $dict.emoji)
       }
 
       $message
