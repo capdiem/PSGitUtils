@@ -26,8 +26,8 @@ $tada = [char]::ConvertFromUtf32('0x1F389');
 $dicts = @(
   @{ code = ':sparkles:'; emoji = $sparkles; type = 'feat:' },
   @{ code = ':new:'; emoji = $new; type = 'feat:' },
+  @{ code = ':boom:'; emoji = $boom; type = 'feat:' },
   @{ code = ':bug:'; emoji = $bug; type = 'fix:' },
-  @{ code = ':boom:'; emoji = $boom; type = 'fix:' },
   @{ code = ':ok_hand:'; emoji = $ok_hand; type = 'fix:' },
   @{ code = ':lipstick:'; emoji = $lipstick; type = 'style:' },
   @{ code = ':speech_balloon:'; emoji = $speech_balloon; type = 'style:' },
@@ -76,8 +76,8 @@ function Invoke-GitCommit {
   [string]$promptMessage = 'Commit standard message with emoji by Git'
 
   $feat = New-Object System.Management.Automation.Host.ChoiceDescription "&new feat$new", 'Introducing new features.'
-  $fix = New-Object System.Management.Automation.Host.ChoiceDescription "&fix bug$bug", 'Fixing a bug.'
   $breakingChanges = New-Object System.Management.Automation.Host.ChoiceDescription "&break changes$boom", 'Introducing breaking changes.'
+  $fix = New-Object System.Management.Automation.Host.ChoiceDescription "&fix bug$bug", 'Fixing a bug.'
   $ok = New-Object System.Management.Automation.Host.ChoiceDescription "&ok$ok_hand", 'Updating code due to code review changes.'
   $style = New-Object System.Management.Automation.Host.ChoiceDescription "&style$lipstick", 'Updating the UI and style files.'
   $typo = New-Object System.Management.Automation.Host.ChoiceDescription "t&ypo$speech_balloon", 'Updating text and literals.'
