@@ -16,6 +16,7 @@ $heavy_minus_sign = [char]::ConvertFromUtf32('0x2796');
 $see_no_evil = [char]::ConvertFromUtf32('0x1F648');
 $pencil = [char]::ConvertFromUtf32('0x1F4DD');
 $zap = [char]::ConvertFromUtf32('0x26A1');
+$wastebasket = [char]::ConvertFromUtf32('0x1F5D1');
 $fire = [char]::ConvertFromUtf32('0x1F525');
 $recycle = [char]::ConvertFromUtf32('0x267B');
 $truck = [char]::ConvertFromUtf32('0x1F69A');
@@ -38,6 +39,7 @@ $dicts = @(
   @{ code = ':see_no_evil:'; emoji = $see_no_evil; type = 'chore:' },
   @{ code = ':pencil:'; emoji = $pencil; type = 'docs:' },
   @{ code = ':zap:'; emoji = $zap; type = 'perf:' },
+  @{ code = ':wastebasket:'; emoji = $wastebasket; type = 'remove:' },
   @{ code = ':fire:'; emoji = $fire; type = 'remove:' },
   @{ code = ':recycle:'; emoji = $recycle; type = 'refactor:' },
   @{ code = ':truck:'; emoji = $truck; type = 'refactor:' },
@@ -87,7 +89,7 @@ function Invoke-GitCommit {
   $gitignore = New-Object System.Management.Automation.Host.ChoiceDescription "&gitignore$see_no_evil", 'Adding or updating a .gitignore file'
   $docs = New-Object System.Management.Automation.Host.ChoiceDescription "&docs$pencil", 'Writing docs.'
   $perf = New-Object System.Management.Automation.Host.ChoiceDescription "&perf$zap", 'Improving performance.'
-  $remove = New-Object System.Management.Automation.Host.ChoiceDescription "remo&ve$fire", 'Removing code or files.'
+  $remove = New-Object System.Management.Automation.Host.ChoiceDescription "remo&ve$wastebasket", 'Removing code or files.'
   $refactor = New-Object System.Management.Automation.Host.ChoiceDescription "&refactor$recycle", 'Refactoring code.'
   $move = New-Object System.Management.Automation.Host.ChoiceDescription "&move or rename$truck", 'Moving or renaming files.'
   $init = New-Object System.Management.Automation.Host.ChoiceDescription "&init$tada", 'Initial commit.'
