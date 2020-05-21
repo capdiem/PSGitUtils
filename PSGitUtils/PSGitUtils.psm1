@@ -1,6 +1,7 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 $sparkles = [char]::ConvertFromUtf32('0x2728');
+$new = [char]::ConvertFromUtf32('0x1F195');
 $bug = [char]::ConvertFromUtf32('0x1F41B');
 $boom = [char]::ConvertFromUtf32('0x1F4A5');
 $ok_hand = [char]::ConvertFromUtf32('0x1F44C');
@@ -24,6 +25,7 @@ $tada = [char]::ConvertFromUtf32('0x1F389');
 
 $dicts = @(
   @{ code = ':sparkles:'; emoji = $sparkles; type = 'feat:' },
+  @{ code = ':new:'; emoji = $new; type = 'feat:' },
   @{ code = ':bug:'; emoji = $bug; type = 'fix:' },
   @{ code = ':boom:'; emoji = $boom; type = 'fix:' },
   @{ code = ':ok_hand:'; emoji = $ok_hand; type = 'fix:' },
@@ -73,7 +75,7 @@ function Invoke-GitCommit {
   [string]$title = 'Git Commit'
   [string]$promptMessage = 'Commit standard message with emoji by Git'
 
-  $feat = New-Object System.Management.Automation.Host.ChoiceDescription "&new feat$sparkles", 'Introducing new features.'
+  $feat = New-Object System.Management.Automation.Host.ChoiceDescription "&new feat$new", 'Introducing new features.'
   $fix = New-Object System.Management.Automation.Host.ChoiceDescription "&fix bug$bug", 'Fixing a bug.'
   $breakingChanges = New-Object System.Management.Automation.Host.ChoiceDescription "&break changes$boom", 'Introducing breaking changes.'
   $ok = New-Object System.Management.Automation.Host.ChoiceDescription "&ok$ok_hand", 'Updating code due to code review changes.'
