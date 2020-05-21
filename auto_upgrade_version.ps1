@@ -1,8 +1,8 @@
-[string]$line = Get-Content '.\PSGitUtils\PSGitUtils.psd1' | Select-String 'ModuleVersion'
-
-[string]$version = $line.Split('''')[1]
-
+[string]$selected = Select-String '.\PSGitUtils\PSGitUtils.psd1' -Pattern 'ModuleVersion'
+[string]$version = $selected.Split('''')[1]
 [int[]]$numbers = $version.Split('.')
+
+Write-Host "Current version is $version." -ForegroundColor Cyan
 
 $options = [System.Management.Automation.Host.ChoiceDescription[]](
   (New-Object System.Management.Automation.Host.ChoiceDescription "&major", "MAJOR version when you make incompatible API changes."),
@@ -11,9 +11,11 @@ $options = [System.Management.Automation.Host.ChoiceDescription[]](
 )
 
 $chooseIndex = $Host.UI.PromptForChoice("Set new version", "Choose a label for generating new version.", $options, 2)
-
 $numbers[$chooseIndex] = $numbers[$chooseIndex] + 1
 
 $newVersion = $numbers -join '.'
 
-$newLine = $line.Replace($version, $newVersion)
+(Get-Content '.\PSGitUtils\PSGitUtils.psd1').Replace($version, $newVersion) | Set-Content '.\PSGitUtils\PSGitUtils.psd1'
+
+Write-Host "New version is $newVersion." -ForegroundColor Green
+Write-Host "Update version successfully!" -ForegroundColor Green
