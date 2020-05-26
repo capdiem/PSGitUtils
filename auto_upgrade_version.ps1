@@ -11,7 +11,15 @@ $options = [System.Management.Automation.Host.ChoiceDescription[]](
 )
 
 $chooseIndex = $Host.UI.PromptForChoice("Set new version", "Choose a label for generating new version.", $options, 2)
+
 $numbers[$chooseIndex] = $numbers[$chooseIndex] + 1
+if ($chooseIndex -eq 0) { # set minor and patch to 0
+  $numbers[1] = 0
+  $numbers[2] = 0
+}
+elseif ($chooseIndex -eq 1) { # set patch to 0
+  $numbers[2] = 0
+}
 
 $newVersion = $numbers -join '.'
 
