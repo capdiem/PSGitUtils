@@ -12,7 +12,7 @@
   RootModule        = 'PSGitUtils.psm1'
 
   # Version number of this module.
-  ModuleVersion     = '0.4.1'
+  ModuleVersion     = '0.5.0'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -89,7 +89,7 @@
   )
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-  AliasesToExport   = 'gc', 'gh', 'emojify', 'ga', 'gb', 'gs', 'gck', 'gpl', 'gps', 'grst', 'gd'
+  AliasesToExport   = 'ggc', 'ggl', 'emojify', 'gga', 'ggb', 'ggs', 'ggck', 'ggpl', 'ggps', 'ggrst', 'ggd'
 
   # DSC resources to export from this module
   # DscResourcesToExport = @()

@@ -247,20 +247,18 @@ function Invoke-GitHistory {
   Invoke-Emojify($logs)
 }
 
-Set-Alias ga Invoke-GitAdd
-Remove-Item 'Alias:\gcm' -Force
-Set-Alias gcm Invoke-GitCommit
-Set-Alias gb Invoke-GitBranch
-Set-Alias gs Invoke-GitStatus
-Set-Alias gck Invoke-GitCheckout
-Set-Alias gpl Invoke-GitPull
-Remove-Item 'Alias:\gps' -Force
-Set-Alias gps Invoke-GitPush
-Set-Alias grst Invoke-GitReset
-Set-Alias gd Invoke-GitDiff
-Set-Alias gh Invoke-GitHistory
+Set-Alias gga Invoke-GitAdd
+Set-Alias ggc Invoke-GitCommit
+Set-Alias ggb Invoke-GitBranch
+Set-Alias ggs Invoke-GitStatus
+Set-Alias ggck Invoke-GitCheckout
+Set-Alias ggpl Invoke-GitPull
+Set-Alias ggps Invoke-GitPush
+Set-Alias ggrst Invoke-GitReset
+Set-Alias ggd Invoke-GitDiff
+Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 
 Export-ModuleMember -Function Invoke-GitCommit, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
-Export-ModuleMember -Alias  gcm, gh, emojify, ga, gb, gs, gck, gpl, gps, grst, gd
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggpl, ggps, ggrst, ggd
 Export-ModuleMember -Variable GitUtilsConfig

@@ -2,6 +2,12 @@
 
 Providers emoji supports for Git commit and Git log.
 
+## Install
+
+```powershell
+> Install-Module -Name PSGitUtils
+```
+
 # Usage
 
 - Invoke-GitCommit
@@ -31,7 +37,43 @@ Providers emoji supports for Git commit and Git log.
   > $GitUtilsConfig.Emoji = $False
   ```
 
-# References
+- Other Aliases
+
+  ```powershell
+  > gga # git add, default git add .
+  > ggb # git branch, default git branch -av
+  > ggck # git checkout
+  > ggd # git diff
+  > ggpl # git pull
+  > ggps # git push
+  > ggrst # git reset
+  > ggs # git status
+  ```
+
+## Best Practices
+
+```powershell
+# open default profile
+> notepad $PROFILE
+# copy the following code and paste it into $PROFILE
+if (Get-Module PSGitUtils -ListAvailable) {
+  Set-Alias ga gga
+  Set-Alias gb ggb
+  Set-Alias gck ggck
+  Remove-Item 'Alias:\gcm' -Force
+  Set-Alias gcm ggc
+  Set-Alias gcmd Get-Command
+  Set-Alias gd ggd
+  Set-Alias gh ggl
+  Set-Alias gpl ggpl
+  Remove-Item 'Alias:\gps' -Force
+  Set-Alias gps ggps
+  Set-Alias grst ggrst
+  Set-Alias gs ggs
+}
+```
+
+## References
 
 - [Gitmoji](https://gitmoji.carloscuesta.me/)
 
