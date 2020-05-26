@@ -58,7 +58,7 @@ function Invoke-GitAdd {
     git add .
   }
   else {
-    git add $arg
+    git add $args
   }
 }
 
