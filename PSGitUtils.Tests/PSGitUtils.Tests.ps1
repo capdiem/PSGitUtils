@@ -24,7 +24,7 @@ Describe "PSGitUtils" {
     }
 
     It "success for alias emojify" {
-      Invoke-Emojify $multiCode | Should be "👌 fix: Use 🗑️ instead of 🔥"
+      emojify $multiCode | Should be "👌 fix: Use 🗑️ instead of 🔥"
     }
   }
 }
