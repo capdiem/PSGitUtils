@@ -12,7 +12,7 @@
   RootModule        = 'PSGitUtils.psm1'
 
   # Version number of this module.
-  ModuleVersion     = '0.2.5'
+  ModuleVersion     = '0.4.0'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -69,7 +69,15 @@
   FunctionsToExport = @(
     'Invoke-GitCommit',
     'Invoke-GitHistory',
-    'Invoke-Emojify'
+    'Invoke-Emojify',
+    'Invoke-GitAdd',
+    'Invoke-GitBranch',
+    'Invoke-GitStatus',
+    'Invoke-GitCheckout',
+    'Invoke-GitPull',
+    'Invoke-GitPush',
+    'Invoke-GitReset',
+    'Invoke-GitDiff'
   )
 
   # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -81,7 +89,7 @@
   )
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-  AliasesToExport   = 'ggc', 'ggh', 'emojify'
+  AliasesToExport   = 'gc', 'gh', 'emojify', 'ga', 'gb', 'gs', 'gck', 'gpl', 'gps', 'grst', 'gd'
 
   # DSC resources to export from this module
   # DscResourcesToExport = @()
@@ -98,7 +106,7 @@
     PSData = @{
 
       # Tags applied to this module. These help with module discovery in online galleries.
-      Tags = @('git', 'emoji', 'commit', 'history')
+      Tags       = @('git', 'emoji')
 
       # A URL to the license for this module.
       LicenseUri = 'https://github.com/capdiem/PSGitUtils/blob/master/LICENSE'

@@ -53,6 +53,43 @@ $GitUtilsConfig = @{
   Type  = $true;
 }
 
+function Invoke-GitAdd {
+  if ($args.Count -eq 0) {
+    git add .
+  }
+  else {
+    git add $arg
+  }
+}
+
+## git branch [-a|$args]
+function Invoke-GitBranch {
+  if ($args.Count -eq 0) {
+    git branch -av
+  }
+  else {
+    git branch $args
+  }
+}
+
+## git status
+function Invoke-GitStatus { git status $args }
+
+## git checkout [$args]
+function Invoke-GitCheckout { git checkout $args }
+
+## git pull
+function Invoke-GitPull { git pull $args }
+
+## git push
+function Invoke-GitPush { git push $args }
+
+## git reset
+function Invoke-GitReset { git reset $args }
+
+## git diff
+function Invoke-GitDiff { git diff $args }
+
 <#
 .EXAMPLE
 Invoke-GitCommit 'Initial commit'
@@ -210,10 +247,20 @@ function Invoke-GitHistory {
   Invoke-Emojify($logs)
 }
 
-Set-Alias ggc Invoke-GitCommit
-Set-Alias ggh Invoke-GitHistory
+Set-Alias ga Invoke-GitAdd
+Remove-Item 'Alias:\gcm' -Force
+Set-Alias gcm Invoke-GitCommit
+Set-Alias gb Invoke-GitBranch
+Set-Alias gs Invoke-GitStatus
+Set-Alias gck Invoke-GitCheckout
+Set-Alias gpl Invoke-GitPull
+Remove-Item 'Alias:\gps' -Force
+Set-Alias gps Invoke-GitPush
+Set-Alias grst Invoke-GitReset
+Set-Alias gd Invoke-GitDiff
+Set-Alias gh Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 
-Export-ModuleMember -Function Invoke-GitCommit, Invoke-GitHistory, Invoke-Emojify
-Export-ModuleMember -Alias  ggc, ggh, emojify
+Export-ModuleMember -Function Invoke-GitCommit, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
+Export-ModuleMember -Alias  gcm, gh, emojify, ga, gb, gs, gck, gpl, gps, grst, gd
 Export-ModuleMember -Variable GitUtilsConfig
