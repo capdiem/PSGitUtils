@@ -108,7 +108,7 @@ function Invoke-GitCommit {
   }
   catch {
     Write-Error 'Could not find Git, please install Git first.'
-    exit
+    return
   }
 
   [System.Collections.ArrayList]$params = @()
@@ -243,7 +243,7 @@ function Invoke-GitHistory {
   }
   catch {
     Write-Error 'Could not find Git, please install Git first.'
-    exit
+    return
   }
 
   $arg = '-' + $count.ToString()
