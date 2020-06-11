@@ -98,7 +98,9 @@ function Invoke-GitCommit {
   param (
     [Parameter(Mandatory = $true, HelpMessage = 'The commit message for git.')]
     [Alias('m')]
-    [string]$message
+    [string]$message,
+    # --no-verify
+    [switch]$noVerify
   )
 
   try {
@@ -107,6 +109,11 @@ function Invoke-GitCommit {
   catch {
     Write-Error 'Could not find Git, please install Git first.'
     exit
+  }
+
+  [System.Collections.ArrayList]$params = @()
+  if ($noVerify) {
+    $params.Add("--no-verify")
   }
 
   [string]$title = 'Git Commit'
@@ -175,12 +182,11 @@ function Invoke-GitCommit {
 
     $newMessage = $newMessage + $message
 
-    git commit -m $newMessage
+    git commit -m $newMessage $params
   }
   else {
-    git commit -m $message
+    git commit -m $message $params
   }
-
 }
 
 <#
