@@ -1,10 +1,8 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-$sparkles = [char]::ConvertFromUtf32('0x2728');
 $new = [char]::ConvertFromUtf32('0x1F195');
 $bug = [char]::ConvertFromUtf32('0x1F41B');
 $boom = [char]::ConvertFromUtf32('0x1F4A5');
-$ok_hand = [char]::ConvertFromUtf32('0x1F44C');
 $lipstick = [char]::ConvertFromUtf32('0x1F484');
 $speech_balloon = [char]::ConvertFromUtf32('0x1F4AC');
 $art = [char]::ConvertFromUtf32('0x1F3A8');
@@ -15,37 +13,113 @@ $arrow_down = [char]::ConvertFromUtf32('0x2B07');
 $heavy_plus_sign = [char]::ConvertFromUtf32('0x2795');
 $heavy_minus_sign = [char]::ConvertFromUtf32('0x2796');
 $see_no_evil = [char]::ConvertFromUtf32('0x1F648');
-$pencil = [char]::ConvertFromUtf32('0x1F4DD');
+$pencil2 = [char]::ConvertFromUtf32('0x0270f');
+$memo = [char]::ConvertFromUtf32('0x1f4dd');
+$bulb = [char]::ConvertFromUtf32('0x1f4a1');
 $zap = [char]::ConvertFromUtf32('0x26A1');
-$wastebasket = [char]::ConvertFromUtf32('0x1F5D1');
 $fire = [char]::ConvertFromUtf32('0x1F525');
 $recycle = [char]::ConvertFromUtf32('0x267B');
 $truck = [char]::ConvertFromUtf32('0x1F69A');
 $tada = [char]::ConvertFromUtf32('0x1F389');
+$hammer = [char]::ConvertFromUtf32('0x1f528');
+$construction = [char]::ConvertFromUtf32('0x1f6a7');
+$children_crossing = [char]::ConvertFromUtf32('0x1f6b8');
 
 $dicts = @(
-  @{ index = -99; code = ':sparkles:'; emoji = $sparkles; type = 'feat:' },
-  @{ index = 0; code = ':new:'; emoji = $new; type = 'feat:' },
-  @{ index = 1; code = ':boom:'; emoji = $boom; type = 'feat:' },
-  @{ index = 2; code = ':bug:'; emoji = $bug; type = 'fix:' },
-  @{ index = 3; code = ':speech_balloon:'; emoji = $speech_balloon; type = 'fix:' },
-  @{ index = 4; code = ':ok_hand:'; emoji = $ok_hand; type = 'fix:' },
-  @{ index = 5; code = ':lipstick:'; emoji = $lipstick; type = 'style:' },
-  @{ index = 6; code = ':art:'; emoji = $art; type = 'style:' },
-  @{ index = 7; code = ':white_check_mark:'; emoji = $white_check_mark; type = 'test:' },
-  @{ index = 8; code = ':wrench:'; emoji = $wrench; type = 'chore:' },
-  @{ index = 9; code = ':arrow_up:'; emoji = $arrow_up; type = 'chore:' },
-  @{ index = 10; code = ':arrow_down:'; emoji = $arrow_down; type = 'chore:' },
-  @{ index = 11; code = ':heavy_plus_sign:'; emoji = $heavy_plus_sign; type = 'chore:' },
-  @{ index = 12; code = ':heavy_minus_sign:'; emoji = $heavy_minus_sign; type = 'chore:' },
-  @{ index = 13; code = ':see_no_evil:'; emoji = $see_no_evil; type = 'chore:' },
-  @{ index = 14; code = ':pencil:'; emoji = $pencil; type = 'docs:' },
-  @{ index = 15; code = ':zap:'; emoji = $zap; type = 'perf:' },
-  @{ index = 16; code = ':wastebasket:'; emoji = $wastebasket; type = 'remove:' },
-  @{ index = -16; code = ':fire:'; emoji = $fire; type = 'remove:' },
-  @{ index = 17; code = ':recycle:'; emoji = $recycle; type = 'refactor:' },
-  @{ index = 18; code = ':truck:'; emoji = $truck; type = 'refactor:' },
-  @{ index = 19; code = ':tada:'; emoji = $tada; type = 'init:' }
+  @{ code = ':sparkles:'; emoji = $sparkles; },
+  @{ code = ':new:'; emoji = $new; },
+  @{ code = ':boom:'; emoji = $boom; },
+  @{ code = ':bug:'; emoji = $bug; },
+  @{ code = ':speech_balloon:'; emoji = $speech_balloon; },
+  @{ code = ':ok_hand:'; emoji = $ok_hand; },
+  @{ code = ':lipstick:'; emoji = $lipstick; },
+  @{ code = ':art:'; emoji = $art; },
+  @{ code = ':white_check_mark:'; emoji = $white_check_mark; },
+  @{ code = ':wrench:'; emoji = $wrench; },
+  @{ code = ':arrow_up:'; emoji = $arrow_up; },
+  @{ code = ':arrow_down:'; emoji = $arrow_down; },
+  @{ code = ':heavy_plus_sign:'; emoji = $heavy_plus_sign; },
+  @{ code = ':heavy_minus_sign:'; emoji = $heavy_minus_sign; },
+  @{ code = ':see_no_evil:'; emoji = $see_no_evil; },
+  @{ code = ':pencil2:'; emoji = $pencil; },
+  @{ code = ':memo:'; emoji = $memo; },
+  @{ code = ':bulb:'; emoji = $bulb; },
+  @{ code = ':zap:'; emoji = $zap; },
+  @{ code = ':wastebasket:'; emoji = $wastebasket; },
+  @{ code = ':fire:'; emoji = $fire; },
+  @{ code = ':recycle:'; emoji = $recycle; },
+  @{ code = ':truck:'; emoji = $truck; },
+  @{ code = ':tada:'; emoji = $tada; },
+  @{ code = ':hammer:'; emoji = $hammer; },
+  @{ code = ':construction:'; emoji = $construction; },
+  @{ code = ':children_crossing:'; emoji = $children_crossing; }
+)
+
+$typeOptions = [System.Management.Automation.Host.ChoiceDescription[]] (
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&feat", "New features."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "fi&x", "Bug fix."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&docs", "Changes to documentation."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&style", "Formatting, missing semi clons, etc. No production code change."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&refactor", "Refactoring production code."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&test", "Adding missing tests, refactoring tests; no production code change."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&chore", "Updating grunt tasks etc; no production code change."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&emoji", "Other emojis but no type is required(e.g.: working,)."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&notype", "No type.")
+)
+
+$featOptions = [System.Management.Automation.Host.ChoiceDescription[]] @(
+  "$new(New &feat)",
+  "$boom(&Break changes)"
+  "$tada(Beg&in a project)",
+  "(&No emoji)"
+)
+
+$fixOptions = [System.Management.Automation.Host.ChoiceDescription[]](
+  "$bug(&Fix bugs)",
+  "$speech_balloon(Add or update &text and literals)",
+  "$pencil2(Fix t&ypos)",
+  "(&No emoji)"
+)
+
+$styleOptions = [System.Management.Automation.Host.ChoiceDescription[]](
+  "$lipstick(Add or update the UI and &style files)",
+  "$art(Improve structure / &format of the code)",
+  "(&No emoji)"
+)
+
+$testOptions = [System.Management.Automation.Host.ChoiceDescription[]](
+  "$white_check_mark(Add or update &tests)",
+  "(&No emoji)"
+)
+
+$choreOptions = [System.Management.Automation.Host.ChoiceDescription[]](
+  "$wrench(Add or update &configuration files)",
+  "$arrow_up(&Upgrade dependencies.)",
+  "$arrow_down(&Downgrade dependencies)",
+  "$heavy_plus_sign(&Add a dependency)",
+  "$heavy_minus_sign(&Remove a dependency)",
+  "$see_no_evil(Add or update a .&gitignore file)",
+  "$hammer(Add or update development scripts)",
+  "(&No emoji)"
+)
+
+$docsOptions = [System.Management.Automation.Host.ChoiceDescription[]](
+  "$memo(Add or update &documentation.)",
+  "$bulb(Add or update &comments in source code)",
+  "(&No emoji)"
+)
+
+$refactorOptions = [System.Management.Automation.Host.ChoiceDescription[]](
+  "$recycle(&Refactor code)",
+  "$zap(Improve &performance)",
+  "$truck(&Move or rename resources(e.g.: files, paths, routes))",
+  "$fire(Remove code or &files)",
+  "(&No emoji)"
+)
+
+$emojiOptions = [System.Management.Automation.Host.ChoiceDescription[]](
+  "$construction(Work in &progress)",
+  "$children_crossing(Improve &user experience / usability)"
 )
 
 $GitUtilsConfig = @{
@@ -116,77 +190,121 @@ function Invoke-GitCommit {
     $params.Add("--no-verify")
   }
 
-  [string]$title = 'Git Commit'
-  [string]$promptMessage = 'Commit standard message with emoji by Git'
+  [string]$type
+  [string]$emoji
 
-  $feat = New-Object System.Management.Automation.Host.ChoiceDescription "&new feat$new", 'Introducing new features.'
-  $breakingChanges = New-Object System.Management.Automation.Host.ChoiceDescription "&break changes$boom", 'Introducing breaking changes.'
-  $fix = New-Object System.Management.Automation.Host.ChoiceDescription "&fix bug$bug", 'Fixing a bug.'
-  $ok = New-Object System.Management.Automation.Host.ChoiceDescription "&ok$ok_hand", 'Updating code due to code review changes.'
-  $style = New-Object System.Management.Automation.Host.ChoiceDescription "&style$lipstick", 'Updating the UI and style files.'
-  $typo = New-Object System.Management.Automation.Host.ChoiceDescription "t&ypo$speech_balloon", 'Updating text and literals.'
-  $artc = New-Object System.Management.Automation.Host.ChoiceDescription "form&at code$art", 'improving structure / format of the code.'
-  $test = New-Object System.Management.Automation.Host.ChoiceDescription "&test$white_check_mark", 'Updating tests.'
-  $chore = New-Object System.Management.Automation.Host.ChoiceDescription "&chore$wrench", 'Changing configuration files.'
-  $upgrade = New-Object System.Management.Automation.Host.ChoiceDescription "&upgrade$arrow_up", 'Upgrading dependencies.'
-  $downgrade = New-Object System.Management.Automation.Host.ChoiceDescription "do&wngrade$arrow_down", 'Downgrading dependencies.'
-  $addDependencies = New-Object System.Management.Automation.Host.ChoiceDescription "&+dependency$heavy_plus_sign", 'Adding a dependency.'
-  $removeDependencies = New-Object System.Management.Automation.Host.ChoiceDescription "&-dependency$heavy_minus_sign", 'Removing a dependency.'
-  $gitignore = New-Object System.Management.Automation.Host.ChoiceDescription "&gitignore$see_no_evil", 'Adding or updating a .gitignore file'
-  $docs = New-Object System.Management.Automation.Host.ChoiceDescription "&docs$pencil", 'Writing docs.'
-  $perf = New-Object System.Management.Automation.Host.ChoiceDescription "&perf$zap", 'Improving performance.'
-  $remove = New-Object System.Management.Automation.Host.ChoiceDescription "remo&ve$wastebasket", 'Removing code or files.'
-  $refactor = New-Object System.Management.Automation.Host.ChoiceDescription "&refactor$recycle", 'Refactoring code.'
-  $move = New-Object System.Management.Automation.Host.ChoiceDescription "&move or rename$truck", 'Moving or renaming files.'
-  $init = New-Object System.Management.Automation.Host.ChoiceDescription "&init$tada", 'Initial commit.'
-  $plain = New-Object System.Management.Automation.Host.ChoiceDescription "p&lain", 'No emoji, no type.'
+  if ($GitUtilsConfig.Emoji -or $GitUtilsConfig.Type) {
+    $typeIndex = $Host.UI.PromptForChoice("Commiting messages...", "Please choose a type for this changes that you commit:", $typeOptions, 8)
 
-  $options = [System.Management.Automation.Host.ChoiceDescription[]](
-    $feat,
-    $breakingChanges,
-    $fix,
-    $typo,
-    $ok,
-    $style,
-    $artc,
-    $test,
-    $chore,
-    $upgrade,
-    $downgrade,
-    $addDependencies,
-    $removeDependencies,
-    $gitignore,
-    $docs,
-    $perf,
-    $remove,
-    $refactor,
-    $move,
-    $init,
-    $plain
-  )
+    switch ($typeIndex) {
+      0 {
+        if ($GitUtilsConfig.Emoji) {
+          $featIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $featOptions, 0)
+          switch ($featIndex) {
+            0 { $emoji = $new }
+            1 { $emoji = $boom }
+            2 { $emoji = $tada }
+            Default { }
+          }
+        }
 
-  $chooseIndex = $Host.UI.PromptForChoice($title, $promptMessage, $options, 2)
+        $type = "feat: "
+      }
+      1 {
+        if ($GitUtilsConfig.Emoji) {
+          $fixIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $fixOptions, 0)
+          switch ($fixIndex) {
+            0 { $emoji = $bug }
+            1 { $emoji = $speech_balloon }
+            2 { $emoji = $pencil2 }
+          }
+        }
 
-  if ($chooseIndex -lt $dicts.Length - 1) {
-    [string]$newMessage
+        $type = "fix: "
+      }
+      2 {
+        if ($GitUtilsConfig.Emoji) {
+          $docsIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $docsOptions, 0)
+          switch ($docsIndex) {
+            0 { $emoji = $memo }
+            1 { $emoji = $bulb }
+          }
+        }
 
-    $dict = $dicts.Where( { $_.index -eq $chooseIndex }, 'First')
+        $type = "docs: "
+      }
+      3 {
+        if ($GitUtilsConfig.Emoji) {
+          $styleIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $styleOptions, 0)
+          switch ($styleIndex) {
+            0 { $emoji = $lipstick }
+            1 { $emoji = $art }
+          }
+        }
 
-    if ($GitUtilsConfig.Emoji) {
-      $newMessage = $dict.code + ' '
+        $type = "style: "
+      }
+      4 {
+        if ($GitUtilsConfig.Emoji) {
+          $refactorIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $refactorOptions, 0)
+          switch ($refactorIndex) {
+            0 { $emoji = $recycle }
+            1 { $emoji = $zap }
+            2 { $emoji = $truck }
+          }
+        }
+
+        $type = "refactor: "
+      }
+      5 {
+        if ($GitUtilsConfig.Emoji) {
+          $testIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $testOptions, 0)
+          switch ($testIndex) {
+            0 { $emoji = $white_check_mark }
+          }
+        }
+
+        $type = "test: "
+      }
+      6 {
+        if ($GitUtilsConfig.Emoji) {
+          $choreIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $choreOptions, 0)
+          switch ($choreIndex) {
+            0 { $emoji = $wrench }
+            1 { $emoji = $arrow_up }
+            2 { $emoji = $arrow_down }
+            3 { $emoji = $heavy_plus_sign }
+            4 { $emoji = $heavy_minus_sign }
+            5 { $emoji = $see_no_evil }
+          }
+        }
+
+        $type = "chore: "
+      }
+      7 {
+        if ($GitUtilsConfig.Emoji) {
+          $emojiIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $emojiOptions, 0)
+          switch ($emojiIndex) {
+            0 { $emoji = $construction }
+            1 { $emoji = $children_crossing }
+          }
+        }
+      }
     }
-
-    if ($GitUtilsConfig.Type) {
-      $newMessage = $newMessage + $dict.type + ' '
-    }
-
-    $newMessage = $newMessage + $message
-
-    git commit -m $newMessage $params
   }
-  else {
-    git commit -m $message $params
+
+  [string]$newMessage
+  if ($GitUtilsConfig.Type) {
+    $newMessage = $type
   }
+  if ($GitUtilsConfig.Emoji) {
+    $newMessage = $newMessage + $emoji + " "
+  }
+
+  $newMessage = $newMessage + $message
+  $newMessage
+
+  # git commit -m $message $params
 }
 
 <#
