@@ -3,7 +3,7 @@ Import-Module $PSScriptRoot\..\PSGitUtils\PSGitUtils.psd1 -Force
 Describe "PSGitUtils" {
   $singleCode = ":boom: break changes"
   $singleCodes = ":boom: break chages", ":bug: fix: something wrong!"
-  $multiCode = ":ok_hand: fix: Use :wastebasket: instead of :fire:"
+  $multiCode = ":construction: fix: Use :children_crossing: instead of :fire:"
 
   Context "Invoke-Emojify" {
     It "success for single-Gitmoji string" {
@@ -15,7 +15,7 @@ Describe "PSGitUtils" {
     }
 
     It "success for muilt-Gitmoji string" {
-      Invoke-Emojify $multiCode | Should be "👌 fix: Use 🗑️ instead of 🔥"
+      Invoke-Emojify $multiCode | Should be "🚧 fix: Use 🚸 instead of 🔥"
     }
 
     It "success for no-Gitmoji string" {
@@ -24,7 +24,7 @@ Describe "PSGitUtils" {
     }
 
     It "success for alias emojify" {
-      emojify $multiCode | Should be "👌 fix: Use 🗑️ instead of 🔥"
+      emojify $multiCode | Should be "🚧 fix: Use 🚸 instead of 🔥"
     }
   }
 }
