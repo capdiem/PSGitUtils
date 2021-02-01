@@ -122,10 +122,11 @@ $emojiOptions = [System.Management.Automation.Host.ChoiceDescription[]](
   "$children_crossing(Improve &user experience / usability)"
 )
 
-$GitUtilsConfig = @{
+$global:GitUtilsConfig = @{
   Emoji = $true;
   Type  = $true;
 }
+$config = $global:GitUtilsConfig
 
 function Invoke-GitAdd {
   if ($args.Count -eq 0) {
@@ -193,12 +194,12 @@ function Invoke-GitCommit {
   [string]$type
   [string]$emoji
 
-  if ($GitUtilsConfig.Emoji -or $GitUtilsConfig.Type) {
+  if ($config.Emoji -or $config.Type) {
     $typeIndex = $Host.UI.PromptForChoice("Commiting messages...", "Please choose a type for this changes that you commit:", $typeOptions, 8)
 
     switch ($typeIndex) {
       0 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $featIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $featOptions, 0)
           switch ($featIndex) {
             0 { $emoji = $new }
@@ -211,7 +212,7 @@ function Invoke-GitCommit {
         $type = "feat: "
       }
       1 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $fixIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $fixOptions, 0)
           switch ($fixIndex) {
             0 { $emoji = $bug }
@@ -223,7 +224,7 @@ function Invoke-GitCommit {
         $type = "fix: "
       }
       2 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $docsIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $docsOptions, 0)
           switch ($docsIndex) {
             0 { $emoji = $memo }
@@ -234,7 +235,7 @@ function Invoke-GitCommit {
         $type = "docs: "
       }
       3 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $styleIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $styleOptions, 0)
           switch ($styleIndex) {
             0 { $emoji = $lipstick }
@@ -245,7 +246,7 @@ function Invoke-GitCommit {
         $type = "style: "
       }
       4 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $refactorIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $refactorOptions, 0)
           switch ($refactorIndex) {
             0 { $emoji = $recycle }
@@ -257,7 +258,7 @@ function Invoke-GitCommit {
         $type = "refactor: "
       }
       5 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $testIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $testOptions, 0)
           switch ($testIndex) {
             0 { $emoji = $white_check_mark }
@@ -267,7 +268,7 @@ function Invoke-GitCommit {
         $type = "test: "
       }
       6 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $choreIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $choreOptions, 0)
           switch ($choreIndex) {
             0 { $emoji = $wrench }
@@ -282,7 +283,7 @@ function Invoke-GitCommit {
         $type = "chore: "
       }
       7 {
-        if ($GitUtilsConfig.Emoji) {
+        if ($config.Emoji) {
           $emojiIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $emojiOptions, 0)
           switch ($emojiIndex) {
             0 { $emoji = $construction }
@@ -294,10 +295,10 @@ function Invoke-GitCommit {
   }
 
   [string]$newMessage
-  if ($GitUtilsConfig.Type) {
+  if ($config.Type) {
     $newMessage = $type
   }
-  if ($GitUtilsConfig.Emoji) {
+  if ($config.Emoji) {
     $newMessage = $newMessage + $emoji + " "
   }
 
@@ -384,4 +385,4 @@ Set-Alias emojify Invoke-Emojify
 
 Export-ModuleMember -Function Invoke-GitCommit, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
 Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggpl, ggps, ggrst, ggd
-Export-ModuleMember -Variable GitUtilsConfig
+Export-ModuleMember -Variable $global:GitUtilsConfig
