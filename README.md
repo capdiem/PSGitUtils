@@ -83,7 +83,6 @@ if (Get-Module PSGitUtils -ListAvailable) {
 ## References
 
 - [Gitmoji](https://gitmoji.carloscuesta.me/)
-
 - [Semantic Commit Messages](https://seesparkbox.com/foundry/semantic_commit_messages)
-
 - [git commit emoji 使用指南](https://github.com/liuchengxu/git-commit-emoji-cn)
+- [emoji.dic](https://gist.github.com/Polkm/fe2e4fb940e4e1569684feb503433e3e)
