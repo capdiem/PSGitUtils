@@ -33,8 +33,8 @@ Providers emoji supports for Git commit and Git log.
 - GitUtilsConfig
 
   ```powershell
-  > $GitUtilsConfig.Type = $False
-  > $GitUtilsConfig.Emoji = $False
+  > $GitUtilsConfig.Type = $True  # determine whether to show [type: ]
+  > $GitUtilsConfig.Emoji = $True # determine whether to show [emoji ] after [type: ]
   ```
 
 - Other Aliases
@@ -71,7 +71,14 @@ if (Get-Module PSGitUtils -ListAvailable) {
   Set-Alias grst ggrst
   Set-Alias gs ggs
 }
+
+# use (some examples...)
+> gs # git status
+> gh # git log
+> gcm # git commit -m
 ```
+
+![Example of Invoke-GitCommit](assets/Invoke-GitCommit.gif)
 
 ## References
 
