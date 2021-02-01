@@ -302,9 +302,8 @@ function Invoke-GitCommit {
   }
 
   $newMessage = $newMessage + $message
-  $newMessage
 
-  git commit -m $message $params
+  git commit -m $newMessage $params
 }
 
 <#
