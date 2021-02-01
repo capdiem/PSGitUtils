@@ -57,6 +57,9 @@ Providers emoji supports for Git commit and Git log.
 > notepad $PROFILE
 # copy the following code and paste it into $PROFILE
 if (Get-Module PSGitUtils -ListAvailable) {
+  Import-Module PSGitUtils        # initialize variables
+  $GitUtilsConfig.Type = $false   # do not show [type: ]
+
   Set-Alias ga gga
   Set-Alias gb ggb
   Set-Alias gck ggck
