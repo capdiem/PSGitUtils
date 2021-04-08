@@ -125,6 +125,7 @@ $emojiOptions = [System.Management.Automation.Host.ChoiceDescription[]](
 $global:GitUtilsConfig = @{
   Emoji = $true;
   Type  = $true;
+  Scope = $true;
 }
 $config = $global:GitUtilsConfig
 
@@ -167,6 +168,155 @@ function Invoke-GitDiff { git diff $args }
 
 <#
 .EXAMPLE
+Format-GitCommitMessage 'Initial commit'
+#>
+function Format-GitCommitMessage {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$message
+  )
+  [string]$type
+  [string]$emoji
+  [string]$scope
+
+  [int]$step = 1
+
+  if ($config.Emoji -or $config.Type) {
+    $typeIndex = (Get-Host).UI.PromptForChoice("Committing messages...", "${step}. Please choose a type for this changes that you commit:", $typeOptions, 8)
+    $step++
+
+    Write-Host
+    $choiceMessage = "${step}. Please choose an emoji:"
+    $step++
+
+    switch ($typeIndex) {
+      0 {
+        if ($config.Emoji) {
+          $featIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $featOptions, 0)
+          switch ($featIndex) {
+            0 { $emoji = $new }
+            1 { $emoji = $boom }
+            2 { $emoji = $tada }
+            Default { }
+          }
+        }
+
+        $type = "feat"
+      }
+      1 {
+        if ($config.Emoji) {
+          $fixIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $fixOptions, 0)
+          switch ($fixIndex) {
+            0 { $emoji = $bug }
+            1 { $emoji = $speech_balloon }
+            2 { $emoji = $pencil2 }
+          }
+        }
+
+        $type = "fix"
+      }
+      2 {
+        if ($config.Emoji) {
+          $docsIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $docsOptions, 0)
+          switch ($docsIndex) {
+            0 { $emoji = $memo }
+            1 { $emoji = $bulb }
+          }
+        }
+
+        $type = "docs"
+      }
+      3 {
+        if ($config.Emoji) {
+          $styleIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $styleOptions, 0)
+          switch ($styleIndex) {
+            0 { $emoji = $lipstick }
+            1 { $emoji = $art }
+          }
+        }
+
+        $type = "style"
+      }
+      4 {
+        if ($config.Emoji) {
+          $refactorIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $refactorOptions, 0)
+          switch ($refactorIndex) {
+            0 { $emoji = $recycle }
+            1 { $emoji = $zap }
+            2 { $emoji = $truck }
+          }
+        }
+
+        $type = "refactor"
+      }
+      5 {
+        if ($config.Emoji) {
+          $testIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $testOptions, 0)
+          switch ($testIndex) {
+            0 { $emoji = $white_check_mark }
+          }
+        }
+
+        $type = "test"
+      }
+      6 {
+        if ($config.Emoji) {
+          $choreIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $choreOptions, 0)
+          switch ($choreIndex) {
+            0 { $emoji = $wrench }
+            1 { $emoji = $arrow_up }
+            2 { $emoji = $arrow_down }
+            3 { $emoji = $heavy_plus_sign }
+            4 { $emoji = $heavy_minus_sign }
+            5 { $emoji = $see_no_evil }
+          }
+        }
+
+        $type = "chore"
+      }
+      7 {
+        if ($config.Emoji) {
+          $emojiIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $emojiOptions, 0)
+          switch ($emojiIndex) {
+            0 { $emoji = $construction }
+            1 { $emoji = $children_crossing }
+          }
+        }
+      }
+    }
+  }
+
+  if ($config.Scope) {
+    Write-Host
+    Write-Host "${step}. Please input the scope about this commit, or press the Enter key to skip:"
+    $scope = Read-Host
+  }
+
+  Write-Host
+
+  [string]$newMessage
+
+  if ($config.Type) {
+    $newMessage += $type
+  }
+
+  if ($config.Scope -and ![string]::IsNullOrEmpty($scope)) {
+    $newMessage += "(" + $scope + ")"
+  }
+
+  if (![string]::IsNullOrEmpty($newMessage)) {
+    $newMessage += ": "
+  }
+
+  if ($config.Emoji -and ![string]::IsNullOrEmpty($emoji)) {
+    $newMessage += $emoji + " "
+  }
+
+  return $newMessage + $message
+}
+
+<#
+.EXAMPLE
 Invoke-GitCommit 'Initial commit'
 #>
 function Invoke-GitCommit {
@@ -191,118 +341,7 @@ function Invoke-GitCommit {
     $params.Add("--no-verify")
   }
 
-  [string]$type
-  [string]$emoji
-
-  if ($config.Emoji -or $config.Type) {
-    $typeIndex = $Host.UI.PromptForChoice("Commiting messages...", "Please choose a type for this changes that you commit:", $typeOptions, 8)
-
-    switch ($typeIndex) {
-      0 {
-        if ($config.Emoji) {
-          $featIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $featOptions, 0)
-          switch ($featIndex) {
-            0 { $emoji = $new }
-            1 { $emoji = $boom }
-            2 { $emoji = $tada }
-            Default { }
-          }
-        }
-
-        $type = "feat: "
-      }
-      1 {
-        if ($config.Emoji) {
-          $fixIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $fixOptions, 0)
-          switch ($fixIndex) {
-            0 { $emoji = $bug }
-            1 { $emoji = $speech_balloon }
-            2 { $emoji = $pencil2 }
-          }
-        }
-
-        $type = "fix: "
-      }
-      2 {
-        if ($config.Emoji) {
-          $docsIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $docsOptions, 0)
-          switch ($docsIndex) {
-            0 { $emoji = $memo }
-            1 { $emoji = $bulb }
-          }
-        }
-
-        $type = "docs: "
-      }
-      3 {
-        if ($config.Emoji) {
-          $styleIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $styleOptions, 0)
-          switch ($styleIndex) {
-            0 { $emoji = $lipstick }
-            1 { $emoji = $art }
-          }
-        }
-
-        $type = "style: "
-      }
-      4 {
-        if ($config.Emoji) {
-          $refactorIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $refactorOptions, 0)
-          switch ($refactorIndex) {
-            0 { $emoji = $recycle }
-            1 { $emoji = $zap }
-            2 { $emoji = $truck }
-          }
-        }
-
-        $type = "refactor: "
-      }
-      5 {
-        if ($config.Emoji) {
-          $testIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $testOptions, 0)
-          switch ($testIndex) {
-            0 { $emoji = $white_check_mark }
-          }
-        }
-
-        $type = "test: "
-      }
-      6 {
-        if ($config.Emoji) {
-          $choreIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $choreOptions, 0)
-          switch ($choreIndex) {
-            0 { $emoji = $wrench }
-            1 { $emoji = $arrow_up }
-            2 { $emoji = $arrow_down }
-            3 { $emoji = $heavy_plus_sign }
-            4 { $emoji = $heavy_minus_sign }
-            5 { $emoji = $see_no_evil }
-          }
-        }
-
-        $type = "chore: "
-      }
-      7 {
-        if ($config.Emoji) {
-          $emojiIndex = $Host.UI.PromptForChoice("", "Please choose an emoji:", $emojiOptions, 0)
-          switch ($emojiIndex) {
-            0 { $emoji = $construction }
-            1 { $emoji = $children_crossing }
-          }
-        }
-      }
-    }
-  }
-
-  [string]$newMessage
-  if ($config.Type) {
-    $newMessage = $type
-  }
-  if ($config.Emoji) {
-    $newMessage = $newMessage + $emoji + " "
-  }
-
-  $newMessage = $newMessage + $message
+  $newMessage = Format-GitCommitMessage $message
 
   git commit -m $newMessage $params
 }
@@ -383,6 +422,6 @@ Set-Alias ggd Invoke-GitDiff
 Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 
-Export-ModuleMember -Function Invoke-GitCommit, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
 Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggpl, ggps, ggrst, ggd
 Export-ModuleMember -Variable $global:GitUtilsConfig
