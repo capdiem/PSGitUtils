@@ -332,9 +332,9 @@ function Invoke-Emojify {
 
       $regex = '\:[a-z]\w*(\d|[a-z])*\:'
 
-      $matches = ($message | Select-String $regex -AllMatches).Matches.Value
+      $values = ($message | Select-String $regex -AllMatches).Matches.Value
 
-      foreach ($item in $matches) {
+      foreach ($item in $values) {
         $dict = $dicts.Where( { $_.code -eq $item }, 'First')
         $message = $message -replace ($item, $dict.emoji)
       }
