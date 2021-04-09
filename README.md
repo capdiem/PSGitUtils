@@ -12,7 +12,7 @@ Providers emoji supports for Git commit and Git log.
 
 - Invoke-GitCommit
 
-  Same as `git commit -m`, but provides choices of types. It would generate the message like `[<emoji> ][<type>: ]<message>`. You can modify `$GitUtilsConfig` to decide whether or not generating emoji and type.
+  Same as `git commit -m`, but provides choices of types. It would generate the message like `<type>(<scope>): <emoji> subject`. You can modify `$GitUtilsConfig` to decide whether or not generating emoji and type.
 
   ```powershell
   > Invoke-GitCommit "New Commit"
@@ -33,8 +33,9 @@ Providers emoji supports for Git commit and Git log.
 - GitUtilsConfig
 
   ```powershell
-  > $GitUtilsConfig.Type = $True  # determine whether to show [type: ]
-  > $GitUtilsConfig.Emoji = $True # determine whether to show [emoji ] after [type: ]
+  > $GitUtilsConfig.Type = $True  # determine whether to show the <type>, default show
+  > $GitUtilsConfig.Scope = $True # determine whether to show the <scope>, default show
+  > $GitUtilsConfig.Emoji = $True # determine whether to show the <emoji>, default show
   ```
 
 - Other Aliases
@@ -58,7 +59,7 @@ Providers emoji supports for Git commit and Git log.
 # copy the following code and paste it into $PROFILE
 if (Get-Module PSGitUtils -ListAvailable) {
   Import-Module PSGitUtils        # initialize variables
-  $GitUtilsConfig.Type = $false   # do not show [type: ]
+  $GitUtilsConfig.Emoji = $false   # do not pick and insert <emoji>
 
   Set-Alias ga gga
   Set-Alias gb ggb
