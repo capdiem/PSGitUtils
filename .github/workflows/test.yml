@@ -2,8 +2,11 @@ on: [push]
 jobs:
   test:
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ../
     steps:
       - uses: zyborg/pester-tests-report@v1.4.0
         with:
-          # include_paths: PSGitUtils.Tests
+          include_paths: PSGitUtils.Tests
           github_token: ${{ secrets.GH_TOKEN }}
