@@ -1,7 +1,7 @@
 on: [push]
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: zyborg/pester-tests-report@v1.4.0
         with:
