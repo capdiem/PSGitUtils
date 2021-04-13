@@ -6,4 +6,4 @@ jobs:
       - uses: zyborg/pester-tests-report@v1.4.0
         with:
           include_paths: PSGitUtils.Tests
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}
