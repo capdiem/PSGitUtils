@@ -123,9 +123,11 @@ $emojiOptions = [System.Management.Automation.Host.ChoiceDescription[]](
 )
 
 $global:GitUtilsConfig = @{
-  Emoji = $true;
-  Type  = $true;
-  Scope = $true;
+  Emoji        = $true;
+  Type         = $true;
+  Scope        = $true;
+  BranchPrefix = "feature/";
+  HeadPrefix   = "origin/"
 }
 $config = $global:GitUtilsConfig
 
@@ -153,6 +155,20 @@ function Invoke-GitStatus { git status $args }
 
 ## git checkout [$args]
 function Invoke-GitCheckout { git checkout $args }
+
+# git checkout -b newBranch startPoint
+function Invoke-GitCheckoutNewBranch {
+  [string]$newBranch
+  [string]$startPoint
+  if ($args.Count -gt 0) {
+    $newBranch = $config.BranchPrefix + $args[0]
+  }
+  if ($args.Count -gt 1) {
+    $startPoint = $config.HeadPrefix + $args[1]
+  }
+
+  git checkout -b $newBranch $startPoint
+}
 
 ## git pull
 function Invoke-GitPull { git pull $args }
@@ -415,6 +431,7 @@ Set-Alias ggc Invoke-GitCommit
 Set-Alias ggb Invoke-GitBranch
 Set-Alias ggs Invoke-GitStatus
 Set-Alias ggck Invoke-GitCheckout
+Set-Alias ggckn Invoke-GitCheckoutNewBranch
 Set-Alias ggpl Invoke-GitPull
 Set-Alias ggps Invoke-GitPush
 Set-Alias ggrst Invoke-GitReset
@@ -422,6 +439,6 @@ Set-Alias ggd Invoke-GitDiff
 Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 
-Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
-Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggpl, ggps, ggrst, ggd
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckn, ggpl, ggps, ggrst, ggd
 Export-ModuleMember -Variable $global:GitUtilsConfig
