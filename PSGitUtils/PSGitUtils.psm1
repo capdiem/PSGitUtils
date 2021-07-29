@@ -23,7 +23,12 @@ $truck = [char]::ConvertFromUtf32('0x1F69A');
 $tada = [char]::ConvertFromUtf32('0x1F389');
 $hammer = [char]::ConvertFromUtf32('0x1f528');
 $construction = [char]::ConvertFromUtf32('0x1f6a7');
-$children_crossing = [char]::ConvertFromUtf32('0x1f6b8');
+$children_crossing = [char]::ConvertFromUtf32('0x1f6b8'); #🚸
+$construction_worker = [char]::ConvertFromUtf32('0x1f477'); #👷
+$twisted_rightwards_arrows = [char]::ConvertFromUtf32('0x1f500'); #🔀
+$bookmark = [char]::ConvertFromUtf32('0x1f516'); #🔖
+$clapper = [char]::ConvertFromUtf32('0x1f3ac'); #🎬
+$coffin = [char]::ConvertFromUtf32('0x26b0'); #⚰️
 
 $dicts = @(
   @{ code = ':sparkles:'; emoji = $sparkles; },
@@ -53,6 +58,11 @@ $dicts = @(
   @{ code = ':hammer:'; emoji = $hammer; },
   @{ code = ':construction:'; emoji = $construction; },
   @{ code = ':children_crossing:'; emoji = $children_crossing; }
+  @{ code = ':construction_worker:'; emoji = $construction_worker; }
+  @{ code = ':twisted_rightwards_arrows:'; emoji = $twisted_rightwards_arrows; }
+  @{ code = ':bookmark:'; emoji = $bookmark; }
+  @{ code = ':clapper:'; emoji = $clapper; }
+  @{ code = ':coffin:'; emoji = $coffin; }
 )
 
 $typeOptions = [System.Management.Automation.Host.ChoiceDescription[]] (
@@ -93,19 +103,23 @@ $testOptions = [System.Management.Automation.Host.ChoiceDescription[]](
 )
 
 $choreOptions = [System.Management.Automation.Host.ChoiceDescription[]](
-  "$wrench(Add or update &configuration files)",
+  "$wrench(Add or update configuration &files)",
   "$arrow_up(&Upgrade dependencies.)",
   "$arrow_down(&Downgrade dependencies)",
   "$heavy_plus_sign(&Add a dependency)",
   "$heavy_minus_sign(&Remove a dependency)",
   "$see_no_evil(Add or update a .&gitignore file)",
-  "$hammer(Add or update development scripts)",
+  "$hammer(Add or update development &scripts)",
+  "$construction_worker(Add or update &CI build system)",
+  "$twisted_rightwards_arrows(&Merge branches)",
+  "$bookmark(Release / Version &tags.)",
   "(&No emoji)"
 )
 
 $docsOptions = [System.Management.Automation.Host.ChoiceDescription[]](
-  "$memo(Add or update &documentation.)",
+  "$memo(Add or update &documentation)",
   "$bulb(Add or update &comments in source code)",
+  "$clapper(Add or update demos and &examples)",
   "(&No emoji)"
 )
 
@@ -114,6 +128,7 @@ $refactorOptions = [System.Management.Automation.Host.ChoiceDescription[]](
   "$zap(Improve &performance)",
   "$truck(&Move or rename resources(e.g.: files, paths, routes))",
   "$fire(Remove code or &files)",
+  "$coffin(Remove &dead code)",
   "(&No emoji)"
 )
 
@@ -237,6 +252,7 @@ function Format-GitCommitMessage {
           switch ($docsIndex) {
             0 { $emoji = $memo }
             1 { $emoji = $bulb }
+            2 { $emoji = $clapper }
           }
         }
 
@@ -260,6 +276,7 @@ function Format-GitCommitMessage {
             0 { $emoji = $recycle }
             1 { $emoji = $zap }
             2 { $emoji = $truck }
+            3 { $emoji = $coffin }
           }
         }
 
@@ -285,6 +302,10 @@ function Format-GitCommitMessage {
             3 { $emoji = $heavy_plus_sign }
             4 { $emoji = $heavy_minus_sign }
             5 { $emoji = $see_no_evil }
+            6 { $emoji = $hammer }
+            7 { $emoji = $construction_worker }
+            8 { $emoji = $twisted_rightwards_arrows }
+            9 { $emoji = $bookmark }
           }
         }
 
