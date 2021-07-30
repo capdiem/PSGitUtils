@@ -76,6 +76,8 @@
     'Invoke-GitStatus',
     'Invoke-GitCheckout',
     'Invoke-GitCheckoutNewBranch',
+    'Invoke-GitCheckoutNewFeatureBranch',
+    'Invoke-GitCheckoutNewBugfixBranch',
     'Invoke-GitPull',
     'Invoke-GitPush',
     'Invoke-GitReset',
@@ -91,7 +93,7 @@
   )
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-  AliasesToExport   = 'ggc', 'ggl', 'emojify', 'gga', 'ggb', 'ggs', 'ggck', 'ggckn', 'ggpl', 'ggps', 'ggrst', 'ggd'
+  AliasesToExport   = 'ggc', 'ggl', 'emojify', 'gga', 'ggb', 'ggs', 'ggck', 'ggckn', 'ggckf', 'ggckb', 'ggpl', 'ggps', 'ggrst', 'ggd'
 
   # DSC resources to export from this module
   # DscResourcesToExport = @()

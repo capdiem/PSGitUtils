@@ -138,11 +138,9 @@ $emojiOptions = [System.Management.Automation.Host.ChoiceDescription[]](
 )
 
 $global:GitUtilsConfig = @{
-  Emoji        = $true;
-  Type         = $true;
-  Scope        = $true;
-  BranchPrefix = "feature/";
-  HeadPrefix   = "origin/"
+  Emoji = $true;
+  Type  = $true;
+  Scope = $true;
 }
 $config = $global:GitUtilsConfig
 
@@ -172,17 +170,62 @@ function Invoke-GitStatus { git status $args }
 function Invoke-GitCheckout { git checkout $args }
 
 # git checkout -b newBranch startPoint
-function Invoke-GitCheckoutNewBranch {
-  [string]$newBranch
-  [string]$startPoint
-  if ($args.Count -gt 0) {
-    $newBranch = $config.BranchPrefix + $args[0]
-  }
-  if ($args.Count -gt 1) {
-    $startPoint = $config.HeadPrefix + $args[1]
-  }
+function Invoke-GitCheckoutNewBranch2 {
+  param (
+    [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
+    [Alias('b')]
+    [string]$branch,
+    [Parameter(HelpMessage = "The name of a commit at which to start the new branch.")]
+    [Alias('s')]
+    [string]$startPoint,
+    [Parameter(HelpMessage = "The prefix of new branch, such as feature/, bugfix/, hotfix/, etc.")]
+    [Alias('b-prefix')]
+    [string]$branchPrefix,
+    [Parameter(HelpMessage = "The prefix of start point, such as origin/, etc.")]
+    [Alias('s-prefix')]
+    [string]$startPointPrefix
+  )
 
-  git checkout -b $newBranch $startPoint
+  [string]$newBranch = $branchPrefix + $branch
+  [string]$fromBranch = $startPointPrefix + $startPoint
+
+  git checkout -b $newBranch $fromBranch
+}
+
+function Invoke-GitCheckoutNewFeatureBranch {
+  param (
+    [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
+    [Alias('b')]
+    [string]$branch,
+    [Parameter(HelpMessage = "The name of a commit at which to start the new branch.")]
+    [Alias('s')]
+    [string]$startPoint
+  )
+
+  if ([string]::IsNullOrEmpty($startPoint)) {
+    Invoke-GitCheckoutNewBranch2 $branch -b-prefix "feature/"
+  }
+  else {
+    Invoke-GitCheckoutNewBranch2 $branch $startPoint "feature/" "origin/"
+  }
+}
+
+function Invoke-GitCheckoutNewBugfixBranch {
+  param (
+    [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
+    [Alias('b')]
+    [string]$branch,
+    [Parameter(HelpMessage = "The name of a commit at which to start the new branch.")]
+    [Alias('s')]
+    [string]$startPoint
+  )
+
+  if ([string]::IsNullOrEmpty($startPoint)) {
+    Invoke-GitCheckoutNewBranch2 $branch -b-prefix "bugfix/"
+  }
+  else {
+    Invoke-GitCheckoutNewBranch2 $branch $startPoint "bugfix/" "origin/"
+  }
 }
 
 ## git pull
@@ -453,6 +496,8 @@ Set-Alias ggb Invoke-GitBranch
 Set-Alias ggs Invoke-GitStatus
 Set-Alias ggck Invoke-GitCheckout
 Set-Alias ggckn Invoke-GitCheckoutNewBranch
+Set-Alias ggckf Invoke-GitCheckoutNewFeatureBranch
+Set-Alias ggckb Invoke-GitCheckoutNewBugfixBranch
 Set-Alias ggpl Invoke-GitPull
 Set-Alias ggps Invoke-GitPush
 Set-Alias ggrst Invoke-GitReset
@@ -460,6 +505,6 @@ Set-Alias ggd Invoke-GitDiff
 Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 
-Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
-Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckn, ggpl, ggps, ggrst, ggd
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitCheckoutNewBranch, Invoke-GitCheckoutNewFeatureBranch, Invoke-GitCheckoutNewBugfixBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckn, ggckf, ggckb, ggpl, ggps, ggrst, ggd
 Export-ModuleMember -Variable $global:GitUtilsConfig
