@@ -29,6 +29,7 @@ $twisted_rightwards_arrows = [char]::ConvertFromUtf32('0x1f500'); #🔀
 $bookmark = [char]::ConvertFromUtf32('0x1f516'); #🔖
 $clapper = [char]::ConvertFromUtf32('0x1f3ac'); #🎬
 $coffin = [char]::ConvertFromUtf32('0x26b0'); #⚰️
+$rewind = [char]::ConvertFromUtf32('0x023ea'); #⏪️
 
 $dicts = @(
   @{ code = ':sparkles:'; emoji = $sparkles; },
@@ -63,6 +64,7 @@ $dicts = @(
   @{ code = ':bookmark:'; emoji = $bookmark; }
   @{ code = ':clapper:'; emoji = $clapper; }
   @{ code = ':coffin:'; emoji = $coffin; }
+  @{ code = ':rewind:'; emoji = $rewind; }
 )
 
 $typeOptions = [System.Management.Automation.Host.ChoiceDescription[]] (
@@ -112,7 +114,8 @@ $choreOptions = [System.Management.Automation.Host.ChoiceDescription[]](
   "$hammer(Add or update development &scripts)",
   "$construction_worker(Add or update &CI build system)",
   "$twisted_rightwards_arrows(&Merge branches)",
-  "$bookmark(Release / Version &tags.)",
+  "$bookmark(Release / Version &tags)",
+  "$rewind(Re&vert changes)",
   "(&No emoji)"
 )
 
@@ -349,6 +352,7 @@ function Format-GitCommitMessage {
             7 { $emoji = $construction_worker }
             8 { $emoji = $twisted_rightwards_arrows }
             9 { $emoji = $bookmark }
+            10 { $emoji = $rewind }
           }
         }
 
