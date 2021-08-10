@@ -141,9 +141,10 @@ $emojiOptions = [System.Management.Automation.Host.ChoiceDescription[]](
 )
 
 $global:GitUtilsConfig = @{
-  Emoji = $true;
-  Type  = $true;
-  Scope = $true;
+  Emoji      = $true;
+  Type       = $true;
+  Scope      = $true;
+  EmojiFirst = $false; # determine whether placing the <emoji> in front of <type>
 }
 $config = $global:GitUtilsConfig
 
@@ -380,8 +381,22 @@ function Format-GitCommitMessage {
 
   [string]$newMessage
 
-  if ($config.Type) {
-    $newMessage += $type
+  if ($config.EmojiFirst) {
+    if ($config.Emoji -and ![string]::IsNullOrEmpty($emoji)) {
+      $newMessage += $emoji + " "
+    }
+
+    if ($config.Type) {
+      $newMessage += $type
+    }
+  } else {
+    if ($config.Type) {
+      $newMessage += $type
+    }
+
+    if ($config.Scope -and ![string]::IsNullOrEmpty($scope)) {
+      $newMessage += "(" + $scope + ")"
+    }
   }
 
   if ($config.Scope -and ![string]::IsNullOrEmpty($scope)) {
@@ -390,10 +405,6 @@ function Format-GitCommitMessage {
 
   if (![string]::IsNullOrEmpty($newMessage)) {
     $newMessage += ": "
-  }
-
-  if ($config.Emoji -and ![string]::IsNullOrEmpty($emoji)) {
-    $newMessage += $emoji + " "
   }
 
   return $newMessage + $message
