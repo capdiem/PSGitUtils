@@ -245,6 +245,21 @@ function Invoke-GitReset { git reset $args }
 function Invoke-GitDiff { git diff $args }
 
 <#
+.SYNOPSIS
+Try to delete the local branches that no longer exist on the remote
+
+.DESCRIPTION
+Remove any remote-tracking references that no longer exist on the remote,
+and then try to delete the local branches that no longer exist on the remote
+#>
+function Remove-LocalBranchesThatNoLongerExistOnRemote {
+  $(git fetch -p 2>&1) |
+  Where-Object { $_ -match 'origin\/[a-zA-Z-*]+\/[a-zA-Z-*]+' } |
+  ForEach-Object { ($_ -split 'origin/')[1] } |
+  ForEach-Object { git branch -d $_ }
+}
+
+<#
 .EXAMPLE
 Format-GitCommitMessage 'Initial commit'
 #>
@@ -389,7 +404,8 @@ function Format-GitCommitMessage {
     if ($config.Type) {
       $newMessage += $type
     }
-  } else {
+  }
+  else {
     if ($config.Type) {
       $newMessage += $type
     }
@@ -519,7 +535,8 @@ Set-Alias ggrst Invoke-GitReset
 Set-Alias ggd Invoke-GitDiff
 Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
+Set-Alias ggbs Remove-LocalBranchesThatNoLongerExistOnRemote
 
-Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitCheckoutNewBranch, Invoke-GitCheckoutNewFeatureBranch, Invoke-GitCheckoutNewBugfixBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff
-Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckn, ggckf, ggckb, ggpl, ggps, ggrst, ggd
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitCheckoutNewBranch, Invoke-GitCheckoutNewFeatureBranch, Invoke-GitCheckoutNewBugfixBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Remove-LocalBranchesThatNoLongerExistOnRemote
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckn, ggckf, ggckb, ggpl, ggps, ggrst, ggd, ggbs
 Export-ModuleMember -Variable $global:GitUtilsConfig
