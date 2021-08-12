@@ -174,7 +174,7 @@ function Invoke-GitStatus { git status $args }
 function Invoke-GitCheckout { git checkout $args }
 
 # git checkout -b newBranch startPoint
-function Invoke-GitCheckoutNewBranch2 {
+function Invoke-GitCheckoutNewBranch {
   param (
     [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
     [Alias('b')]
@@ -207,10 +207,10 @@ function Invoke-GitCheckoutNewFeatureBranch {
   )
 
   if ([string]::IsNullOrEmpty($startPoint)) {
-    Invoke-GitCheckoutNewBranch2 $branch -b-prefix "feature/"
+    Invoke-GitCheckoutNewBranch $branch -b-prefix "feature/"
   }
   else {
-    Invoke-GitCheckoutNewBranch2 $branch $startPoint "feature/" "origin/"
+    Invoke-GitCheckoutNewBranch $branch $startPoint "feature/" "origin/"
   }
 }
 
@@ -225,10 +225,10 @@ function Invoke-GitCheckoutNewBugfixBranch {
   )
 
   if ([string]::IsNullOrEmpty($startPoint)) {
-    Invoke-GitCheckoutNewBranch2 $branch -b-prefix "bugfix/"
+    Invoke-GitCheckoutNewBranch $branch -b-prefix "bugfix/"
   }
   else {
-    Invoke-GitCheckoutNewBranch2 $branch $startPoint "bugfix/" "origin/"
+    Invoke-GitCheckoutNewBranch $branch $startPoint "bugfix/" "origin/"
   }
 }
 
