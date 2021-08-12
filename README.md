@@ -36,19 +36,24 @@ Providers emoji supports for Git commit and Git log.
   > $GitUtilsConfig.Type = $True  # determine whether to show the <type>, default show
   > $GitUtilsConfig.Scope = $True # determine whether to show the <scope>, default show
   > $GitUtilsConfig.Emoji = $True # determine whether to show the <emoji>, default show
+  > $GitUtilsConfig.EmojiFirst = $False # determine whether to place the <emoji> in front of <type>, default no
   ```
 
 - Other Aliases
 
   ```powershell
-  > gga # git add, default git add .
-  > ggb # git branch, default git branch -av
-  > ggck # git checkout
-  > ggd # git diff
-  > ggpl # git pull
-  > ggps # git push
+  > gga   # git add, default git add .
+  > ggb   # git branch, default git branch -av
+  > ggck  # git checkout
+  > ggd   # git diff
+  > ggpl  # git pull
+  > ggps  # git push
   > ggrst # git reset
-  > ggs # git status
+  > ggs   # git status
+  > ggckn # git checkout -b <new-branch> <start-point>
+  > ggckf # git checkout -b feature/<new-branch> [origin/<start-point>]
+  > ggckb # git checkout -b bugfix/<new-brnach> [origin/<start-point>]
+  > ggbs  # git fetch -p, and then try to remove local branches that no longer exist on the remote (by git branch -d)
   ```
 
 ## Best Practices
@@ -63,7 +68,11 @@ if (Get-Module PSGitUtils -ListAvailable) {
 
   Set-Alias ga gga
   Set-Alias gb ggb
+  Set-Alias gbs ggbs
   Set-Alias gck ggck
+  Set-Alias gckn ggckn
+  Set-Alias gckf ggckf
+  Set-Alias gckb ggckb
   Remove-Item 'Alias:\gcm' -Force
   Set-Alias gcm ggc
   Set-Alias gcmd Get-Command
