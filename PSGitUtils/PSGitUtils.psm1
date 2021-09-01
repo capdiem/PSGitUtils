@@ -79,6 +79,17 @@ $typeOptions = [System.Management.Automation.Host.ChoiceDescription[]] (
   (New-Object System.Management.Automation.Host.ChoiceDescription "&notype", "No type.")
 )
 
+$branchTypeOptions = [System.Management.Automation.Host.ChoiceDescription[]] (
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&feature", "Any code changes for a new module or use case should be done on a feature branch."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "bugfi&x", "Any necessary fixes after a release, sprint or demo should be done on the bugfix branch."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&hotfix", "Hotfix does not follow the scheduled integration of code and could be merged directly to the production branch, then on the development branch later."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&experimental", "Any new feature or idea that is not part of a release or a sprint. A branch for playing around."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&build", "A branch specifically for creating specific build artifacts or for doing code coverage runs."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&release", "A branch for tagging a specific release version."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&merge", "A temporary branch for resolving merge conflicts, usually between the latest development and a feature or Hotfix branch. This can also be used if two branches of a feature being worked on by multiple developers need to be merged, verified and finalized."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&notype", "No type.")
+)
+
 $featOptions = [System.Management.Automation.Host.ChoiceDescription[]] @(
   "$new(New &feat)",
   "$boom(&Break changes)"
@@ -174,7 +185,7 @@ function Invoke-GitStatus { git status $args }
 function Invoke-GitCheckout { git checkout $args }
 
 # git checkout -b newBranch startPoint
-function Invoke-GitCheckoutNewBranch {
+function Invoke-GitCheckoutNewBranch2 {
   param (
     [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
     [Alias('b')]
@@ -196,40 +207,86 @@ function Invoke-GitCheckoutNewBranch {
   git checkout -b $newBranch $fromBranch
 }
 
-function Invoke-GitCheckoutNewFeatureBranch {
-  param (
-    [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
-    [Alias('b')]
-    [string]$branch,
-    [Parameter(HelpMessage = "The name of a commit at which to start the new branch.")]
-    [Alias('s')]
-    [string]$startPoint
+function Get-GitOriginBranches {
+  param(
+    [switch]$onlyName
   )
-
-  if ([string]::IsNullOrEmpty($startPoint)) {
-    Invoke-GitCheckoutNewBranch $branch -b-prefix "feature/"
-  }
-  else {
-    Invoke-GitCheckoutNewBranch $branch $startPoint "feature/" "origin/"
-  }
+  return (
+    (git branch -a 2>&1) |
+    Where-Object { $_.StartsWith('  remotes') } |
+    Where-Object { !$_.Contains('HEAD') } |
+    ForEach-Object {
+      if ($onlyName) {
+        ($_ -split 'remotes/origin/')[1]
+      }
+      else {
+        ($_ -split 'remotes/')[1]
+      }
+    }
+  )
 }
 
-function Invoke-GitCheckoutNewBugfixBranch {
+function Invoke-GitCheckoutNewBranch {
   param (
     [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
-    [Alias('b')]
-    [string]$branch,
-    [Parameter(HelpMessage = "The name of a commit at which to start the new branch.")]
-    [Alias('s')]
-    [string]$startPoint
+    [string]$branch
   )
+  [string]$startPoint
 
-  if ([string]::IsNullOrEmpty($startPoint)) {
-    Invoke-GitCheckoutNewBranch $branch -b-prefix "bugfix/"
+  [int]$step = 1
+
+  $typeIndex = (Get-Host).UI.PromptForChoice("Creating a new branch and checkout to...", "${step}. Please choose a type for the new branch", $branchTypeOptions, 7)
+
+  switch ($typeIndex) {
+    0 { $branch = "feature/$branch" }
+    1 { $branch = "bugfix/$branch" }
+    2 { $branch = "hotfix/$branch" }
+    3 { $branch = "experimental/$branch" }
+    4 { $branch = "build/$branch" }
+    5 { $branch = "release/$branch" }
+    6 { $branch = "merge/$branch" }
+    Default {}
   }
-  else {
-    Invoke-GitCheckoutNewBranch $branch $startPoint "bugfix/" "origin/"
+
+  Write-Host
+  $step++
+
+  [System.Management.Automation.Host.ChoiceDescription[]]$originBranchOptions = @()
+  [string[]]$originBranches = Get-GitOriginBranches -onlyName
+  [char[]]$existChars = @()
+  for ($i = 0; $i -lt $originBranches.Count; $i++) {
+    $originBranch = $originBranches[$i]
+
+    [int]$originBranchCharIndex = -1
+    [char[]]$originBranchChars = $originBranch.ToCharArray()
+    for ($j = 0; $j -lt $originBranchChars.Count; $j++) {
+      $char = $originBranchChars[$j]
+
+      if (!$existChars.Contains($char)) {
+        $originBranchCharIndex = $j
+        $existChars += $char
+        break
+      }
+    }
+
+    // TODO: &没有插入进去
+    if ($originBranchCharIndex -ne -1) {
+      $originBranch = $originBranch.Insert($originBranchCharIndex, '&')
+    }
+
+    $item = "origin/$originBranch"
+    $originBranchOptions += $item
   }
+  $originBranchOptions += "&notrack";
+
+  $originBranchIndex = (Get-Host).UI.PromptForChoice("", "${step}. Please choose a remote branch to track", $originBranchOptions, $originBranches.Count)
+
+  if ($originBranchIndex -lt $originBranches.Count) {
+    $startPoint = $originBranches[$originBranchIndex]
+  }
+
+  $branch
+  $startPoint
 }
 
 ## git pull
