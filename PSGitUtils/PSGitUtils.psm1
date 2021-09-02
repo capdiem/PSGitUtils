@@ -184,29 +184,7 @@ function Invoke-GitStatus { git status $args }
 ## git checkout [$args]
 function Invoke-GitCheckout { git checkout $args }
 
-# git checkout -b newBranch startPoint
-function Invoke-GitCheckoutNewBranch2 {
-  param (
-    [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
-    [Alias('b')]
-    [string]$branch,
-    [Parameter(HelpMessage = "The name of a commit at which to start the new branch.")]
-    [Alias('s')]
-    [string]$startPoint,
-    [Parameter(HelpMessage = "The prefix of new branch, such as feature/, bugfix/, hotfix/, etc.")]
-    [Alias('b-prefix')]
-    [string]$branchPrefix,
-    [Parameter(HelpMessage = "The prefix of start point, such as origin/, etc.")]
-    [Alias('s-prefix')]
-    [string]$startPointPrefix
-  )
-
-  [string]$newBranch = $branchPrefix + $branch
-  [string]$fromBranch = $startPointPrefix + $startPoint
-
-  git checkout -b $newBranch $fromBranch
-}
-
+## list origin branches
 function Get-GitOriginBranches {
   param(
     [switch]$onlyName
@@ -226,6 +204,19 @@ function Get-GitOriginBranches {
   )
 }
 
+<#
+.SYNOPSIS
+git checkout -b newBranch startPoint
+
+.DESCRIPTION
+Create a new branch and checkout to
+
+.PARAMETER branch
+The branch name that you want to named
+
+.EXAMPLE
+Invoke-GitCheckoutNewBranch order
+#>
 function Invoke-GitCheckoutNewBranch {
   param (
     [Parameter(Mandatory = $true, HelpMessage = 'The name of new branch to create.')]
@@ -269,12 +260,11 @@ function Invoke-GitCheckoutNewBranch {
       }
     }
 
-    // TODO: &没有插入进去
     if ($originBranchCharIndex -ne -1) {
       $originBranch = $originBranch.Insert($originBranchCharIndex, '&')
     }
 
-    $item = "origin/$originBranch"
+    $item = 'origin/' + $originBranch
     $originBranchOptions += $item
   }
   $originBranchOptions += "&notrack";
@@ -282,11 +272,10 @@ function Invoke-GitCheckoutNewBranch {
   $originBranchIndex = (Get-Host).UI.PromptForChoice("", "${step}. Please choose a remote branch to track", $originBranchOptions, $originBranches.Count)
 
   if ($originBranchIndex -lt $originBranches.Count) {
-    $startPoint = $originBranches[$originBranchIndex]
+    $startPoint = "origin/$($originBranches[$originBranchIndex])"
   }
 
-  $branch
-  $startPoint
+  git checkout -b $branch $startPoint
 }
 
 ## git pull
@@ -583,9 +572,7 @@ Set-Alias ggc Invoke-GitCommit
 Set-Alias ggb Invoke-GitBranch
 Set-Alias ggs Invoke-GitStatus
 Set-Alias ggck Invoke-GitCheckout
-Set-Alias ggckn Invoke-GitCheckoutNewBranch
-Set-Alias ggckf Invoke-GitCheckoutNewFeatureBranch
-Set-Alias ggckb Invoke-GitCheckoutNewBugfixBranch
+Set-Alias ggckb Invoke-GitCheckoutNewBranch
 Set-Alias ggpl Invoke-GitPull
 Set-Alias ggps Invoke-GitPush
 Set-Alias ggrst Invoke-GitReset
@@ -594,6 +581,6 @@ Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 Set-Alias ggbs Remove-LocalBranchesThatNoLongerExistOnRemote
 
-Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Invoke-GitCheckoutNewBranch, Invoke-GitCheckoutNewFeatureBranch, Invoke-GitCheckoutNewBugfixBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Remove-LocalBranchesThatNoLongerExistOnRemote
-Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckn, ggckf, ggckb, ggpl, ggps, ggrst, ggd, ggbs
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Get-GitOriginBranches, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Remove-LocalBranchesThatNoLongerExistOnRemote
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckb, ggpl, ggps, ggrst, ggd, ggbs
 Export-ModuleMember -Variable $global:GitUtilsConfig
