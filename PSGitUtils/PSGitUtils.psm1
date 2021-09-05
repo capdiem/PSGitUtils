@@ -244,7 +244,7 @@ function Invoke-GitCheckoutNewBranch {
 
   [System.Management.Automation.Host.ChoiceDescription[]]$originBranchOptions = @()
   [string[]]$originBranches = Get-GitOriginBranches -onlyName
-  [char[]]$existChars = @()
+  [char[]]$existChars = @('n')
   for ($i = 0; $i -lt $originBranches.Count; $i++) {
     $originBranch = $originBranches[$i]
 
