@@ -182,7 +182,47 @@ function Invoke-GitBranch {
 function Invoke-GitStatus { git status $args }
 
 ## git checkout [$args]
-function Invoke-GitCheckout { git checkout $args }
+function Invoke-GitCheckout {
+  if ($args.Count -eq 0) {
+    [System.Management.Automation.Host.ChoiceDescription[]]$localBranchOptions = @()
+    [string[]]$localBranches = (git branch 2>&1) | ForEach-Object { $_.Substring(2) }
+    [char[]]$existChars = @('q')
+
+    for ($i = 0; $i -lt $localBranches.Count; $i++) {
+      $localBranch = $localBranches[$i]
+
+      [int]$localBranchCharIndex = -1
+      [char[]]$localBranchChars = $localBranch.ToCharArray()
+      for ($j = 0; $j -lt $localBranchChars.Count; $j++) {
+        $char = $localBranchChars[$j]
+
+        if (!$existChars.Contains($char)) {
+          $localBranchCharIndex = $j
+          $existChars += $char
+          break
+        }
+      }
+
+      if ($localBranchCharIndex -ne -1) {
+        $localBranch = $localBranch.Insert($localBranchCharIndex, '&')
+      }
+
+      $localBranchOptions += $localBranch
+    }
+
+    $localBranchOptions += "&quit"
+
+    $title = "Switch branch"
+    $message = "Please choose a branch to switch"
+    $choice = $host.UI.PromptForChoice($title, $message, $localBranchOptions, $localBranchOptions.Count - 1)
+    if ($choice -lt $localBranchOptions.Count) {
+      git checkout $localBranches[$choice]
+    }
+  }
+  else {
+    git checkout $args
+  }
+}
 
 ## list origin branches
 function Get-GitOriginBranches {
