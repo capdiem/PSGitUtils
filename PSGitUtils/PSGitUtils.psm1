@@ -178,6 +178,33 @@ function Invoke-GitBranch {
   }
 }
 
+
+## git branch -d
+function Invoke-GitBranchDelete {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$branch
+  )
+
+  Write-Host "Running 'git branch -d $branch'..." -ForegroundColor Green
+
+  $result = (git branch -d $branch 2>&1)
+
+  if ($result -isnot [array] -or !$result[1].ToString().Contains("git branch -D $branch")) {
+    $result
+  }
+  else {
+    $message = "Do you want to run 'git branch -D $branch'?"
+    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Yes"
+    $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "No"
+    $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
+    $choice = $host.ui.PromptForChoice($result[0], $message, $options, 1)
+    if ($choice -eq 0) {
+      git branch -D $branch
+    }
+  }
+}
+
 ## git status
 function Invoke-GitStatus { git status $args }
 
@@ -342,7 +369,7 @@ function Remove-LocalBranchesThatNoLongerExistOnRemote {
   $(git fetch -p 2>&1) |
   Where-Object { $_ -match 'origin\/[a-zA-Z-*]+\/[a-zA-Z-*]+' } |
   ForEach-Object { ($_ -split 'origin/')[1] } |
-  ForEach-Object { git branch -d $_ }
+  ForEach-Object { Invoke-GitBranchDelete $_ }
 }
 
 <#
@@ -610,6 +637,7 @@ function Invoke-GitHistory {
 Set-Alias gga Invoke-GitAdd
 Set-Alias ggc Invoke-GitCommit
 Set-Alias ggb Invoke-GitBranch
+Set-Alias ggbd Invoke-GitBranchDelete
 Set-Alias ggs Invoke-GitStatus
 Set-Alias ggck Invoke-GitCheckout
 Set-Alias ggckb Invoke-GitCheckoutNewBranch
@@ -621,6 +649,6 @@ Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 Set-Alias ggbs Remove-LocalBranchesThatNoLongerExistOnRemote
 
-Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitStatus, Invoke-GitCheckout, Get-GitOriginBranches, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Remove-LocalBranchesThatNoLongerExistOnRemote
-Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggs, ggck, ggckb, ggpl, ggps, ggrst, ggd, ggbs
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitBranchDelete, Invoke-GitStatus, Invoke-GitCheckout, Get-GitOriginBranches, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Remove-LocalBranchesThatNoLongerExistOnRemote
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggbd, ggs, ggck, ggckb, ggpl, ggps, ggrst, ggd, ggbs
 Export-ModuleMember -Variable $global:GitUtilsConfig
