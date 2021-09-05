@@ -1,6 +1,7 @@
 # PSGitUtils
 
-Providers emoji supports for Git commit and Git log.
+- Provides emoji supports for Git commit and Git log.
+- Provides some easier commands that encapsulating git commands.
 
 ## Install
 
@@ -42,18 +43,18 @@ Providers emoji supports for Git commit and Git log.
 - Other Aliases
 
   ```powershell
-  > gga   # git add, default git add .
-  > ggb   # git branch, default git branch -av
-  > ggck  # git checkout
-  > ggd   # git diff
-  > ggpl  # git pull
-  > ggps  # git push
-  > ggrst # git reset
-  > ggs   # git status
-  > ggckn # git checkout -b <new-branch> <start-point>
-  > ggckf # git checkout -b feature/<new-branch> [origin/<start-point>]
-  > ggckb # git checkout -b bugfix/<new-brnach> [origin/<start-point>]
-  > ggbs  # git fetch -p, and then try to remove local branches that no longer exist on the remote (by git branch -d)
+  > gga   # git add [.|args]
+  > ggb   # git branch [-av|args]
+  > ggbd  # git branch -d [args] with user interactions
+  > ggbs  # Try to delete the local branches that no longer exist on the remote
+  > ggck  # git checkout [args], user interactions if args is empty
+  > ggckb # git checkout -b <branch-name>
+  > ggc   # git commit -m <msg> with user interactions
+  > ggd   # git diff [args]
+  > ggpl  # git pull [args]
+  > ggps  # git push [args]
+  > ggrst # git reset [args]
+  > ggs   # git status [args]
   ```
 
 ## Best Practices
@@ -63,15 +64,14 @@ Providers emoji supports for Git commit and Git log.
 > notepad $PROFILE
 # copy the following code and paste it into $PROFILE
 if (Get-Module PSGitUtils -ListAvailable) {
-  Import-Module PSGitUtils        # initialize variables
+  Import-Module PSGitUtils         # initialize variables
   $GitUtilsConfig.Emoji = $false   # do not pick and insert <emoji>
 
   Set-Alias ga gga
   Set-Alias gb ggb
+  Set-Alias gbd ggbd
   Set-Alias gbs ggbs
   Set-Alias gck ggck
-  Set-Alias gckn ggckn
-  Set-Alias gckf ggckf
   Set-Alias gckb ggckb
   Remove-Item 'Alias:\gcm' -Force
   Set-Alias gcm ggc
@@ -88,7 +88,7 @@ if (Get-Module PSGitUtils -ListAvailable) {
 # use (some examples...)
 > gs # git status
 > gh # git log
-> gcm # git commit -m
+> gcm "test" # git commit -m "test"
 ```
 
 ![Example of Invoke-GitCommit](assets/Invoke-GitCommit.gif)
