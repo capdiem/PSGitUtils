@@ -329,7 +329,7 @@ function Remove-LocalBranchesThatNoLongerExistOnRemote {
   $(git fetch -p 2>&1) |
   Where-Object { $_ -match 'origin\/[a-zA-Z-*]+\/[a-zA-Z-*]+' } |
   ForEach-Object { ($_ -split 'origin/')[1] } |
-  ForEach-Object { git branch -d $_ }
+  ForEach-Object { Invoke-GitBranchDelete $_ }
 }
 
 <#
