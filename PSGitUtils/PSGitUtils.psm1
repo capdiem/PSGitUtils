@@ -269,7 +269,7 @@ function Invoke-GitCheckoutNewBranch {
   }
   $originBranchOptions += "&notrack";
 
-  $originBranchIndex = (Get-Host).UI.PromptForChoice("", "${step}. Please choose a remote branch to track", $originBranchOptions, $originBranches.Count)
+  $originBranchIndex = (Get-Host).UI.PromptForChoice("", "${step}. Please choose a remote branch to track", $originBranchOptions, $originBranches.Count - 1)
 
   if ($originBranchIndex -lt $originBranches.Count) {
     $startPoint = "origin/$($originBranches[$originBranchIndex])"
