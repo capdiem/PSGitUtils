@@ -1,4 +1,4 @@
-# PSGitUtils
+# PSGitUtils [![PUBLISH](https://github.com/capdiem/PSGitUtils/actions/workflows/publish.yml/badge.svg?branch=v1.10.2)](https://github.com/capdiem/PSGitUtils/actions/workflows/publish.yml)
 
 - Provides emoji supports for Git commit and Git log.
 - Provides some easier commands that encapsulating git commands.
