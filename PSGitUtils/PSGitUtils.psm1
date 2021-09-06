@@ -181,26 +181,33 @@ function Invoke-GitBranch {
 
 ## git branch -d
 function Invoke-GitBranchDelete {
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]$branch
-  )
-
-  Write-Host "Running 'git branch -d $branch'..." -ForegroundColor Green
-
-  $result = (git branch -d $branch 2>&1)
-
-  if ($result -isnot [array] -or !$result[1].ToString().Contains("git branch -D $branch")) {
-    $result
+  if ($args.Count -eq 0) {
+    [string]$localBranch = Get-OptionsForChoosingLocalBranch "Delete branch" "Please choose a branch to delete"
+    if ($localBranch) {
+      Invoke-GitBranchDelete $localBranch
+    }
   }
   else {
-    $message = "Do you want to run 'git branch -D $branch'?"
-    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Yes"
-    $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "No"
-    $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
-    $choice = $host.ui.PromptForChoice($result[0], $message, $options, 1)
-    if ($choice -eq 0) {
-      git branch -D $branch
+    for ($i = 0; $i -lt $args.Count; $i++) {
+      $branch = $args[$i]
+
+      Write-Host "Running 'git branch -d $branch'..." -ForegroundColor Green
+
+      $result = (git branch -d $branch 2>&1)
+
+      if ($result -isnot [array] -or !$result[1].ToString().Contains("git branch -D $branch")) {
+        $result
+      }
+      else {
+        $message = "Do you want to run 'git branch -D $branch'?"
+        $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Yes"
+        $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "No"
+        $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
+        $choice = $host.ui.PromptForChoice($result[0], $message, $options, 1)
+        if ($choice -eq 0) {
+          git branch -D $branch
+        }
+      }
     }
   }
 }
@@ -208,42 +215,51 @@ function Invoke-GitBranchDelete {
 ## git status
 function Invoke-GitStatus { git status $args }
 
+function Get-OptionsForChoosingLocalBranch {
+  param (
+      [string]$title = 'Choose branch',
+      [string]$message = 'Please choose a branch'
+  )
+  [System.Management.Automation.Host.ChoiceDescription[]]$localBranchOptions = @()
+  [string[]]$localBranches = Get-GitLocalBranches
+  [char[]]$existChars = @('q')
+
+  for ($i = 0; $i -lt $localBranches.Count; $i++) {
+    $localBranch = $localBranches[$i]
+
+    [int]$localBranchCharIndex = -1
+    [char[]]$localBranchChars = $localBranch.ToCharArray()
+    for ($j = 0; $j -lt $localBranchChars.Count; $j++) {
+      $char = $localBranchChars[$j]
+
+      if (!$existChars.Contains($char)) {
+        $localBranchCharIndex = $j
+        $existChars += $char
+        break
+      }
+    }
+
+    if ($localBranchCharIndex -ne -1) {
+      $localBranch = $localBranch.Insert($localBranchCharIndex, '&')
+    }
+
+    $localBranchOptions += $localBranch
+  }
+
+  $localBranchOptions += "&quit"
+
+  $choice = $host.UI.PromptForChoice($title, $message, $localBranchOptions, $localBranchOptions.Count - 1)
+
+  return $localBranches[$choice]
+}
+
 ## git checkout [$args]
 function Invoke-GitCheckout {
   if ($args.Count -eq 0) {
-    [System.Management.Automation.Host.ChoiceDescription[]]$localBranchOptions = @()
-    [string[]]$localBranches = (git branch 2>&1) | ForEach-Object { $_.Substring(2) }
-    [char[]]$existChars = @('q')
+    $localBranch = Get-OptionsForChoosingLocalBranch "Switch branch" "Please choose a branch to switch"
 
-    for ($i = 0; $i -lt $localBranches.Count; $i++) {
-      $localBranch = $localBranches[$i]
-
-      [int]$localBranchCharIndex = -1
-      [char[]]$localBranchChars = $localBranch.ToCharArray()
-      for ($j = 0; $j -lt $localBranchChars.Count; $j++) {
-        $char = $localBranchChars[$j]
-
-        if (!$existChars.Contains($char)) {
-          $localBranchCharIndex = $j
-          $existChars += $char
-          break
-        }
-      }
-
-      if ($localBranchCharIndex -ne -1) {
-        $localBranch = $localBranch.Insert($localBranchCharIndex, '&')
-      }
-
-      $localBranchOptions += $localBranch
-    }
-
-    $localBranchOptions += "&quit"
-
-    $title = "Switch branch"
-    $message = "Please choose a branch to switch"
-    $choice = $host.UI.PromptForChoice($title, $message, $localBranchOptions, $localBranchOptions.Count - 1)
-    if ($choice -lt $localBranchOptions.Count) {
-      git checkout $localBranches[$choice]
+    if ($localBranch) {
+      git checkout $localBranch
     }
   }
   else {
@@ -257,18 +273,21 @@ function Get-GitOriginBranches {
     [switch]$onlyName
   )
   return (
-    (git branch -a 2>&1) |
-    Where-Object { $_.StartsWith('  remotes') } |
+    (git branch -r 2>&1) |
     Where-Object { !$_.Contains('HEAD') } |
     ForEach-Object {
       if ($onlyName) {
-        ($_ -split 'remotes/origin/')[1]
+        $_.Substring('  origin/'.Length)
       }
       else {
-        ($_ -split 'remotes/')[1]
+        $_.Substring(2)
       }
     }
   )
+}
+
+function Get-GitLocalBranches {
+  return (git branch 2>&1) | ForEach-Object { $_.Substring(2) }
 }
 
 <#
@@ -336,7 +355,7 @@ function Invoke-GitCheckoutNewBranch {
   }
   $originBranchOptions += "&notrack";
 
-  $originBranchIndex = (Get-Host).UI.PromptForChoice("", "${step}. Please choose a remote branch to track", $originBranchOptions, $originBranches.Count - 1)
+  $originBranchIndex = (Get-Host).UI.PromptForChoice("", "${step}. Please choose a remote branch to track", $originBranchOptions, $originBranchOptions.Count - 1)
 
   if ($originBranchIndex -lt $originBranches.Count) {
     $startPoint = "origin/$($originBranches[$originBranchIndex])"
