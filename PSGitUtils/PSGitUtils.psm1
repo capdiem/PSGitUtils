@@ -181,26 +181,33 @@ function Invoke-GitBranch {
 
 ## git branch -d
 function Invoke-GitBranchDelete {
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]$branch
-  )
-
-  Write-Host "Running 'git branch -d $branch'..." -ForegroundColor Green
-
-  $result = (git branch -d $branch 2>&1)
-
-  if ($result -isnot [array] -or !$result[1].ToString().Contains("git branch -D $branch")) {
-    $result
+  if ($args.Count -eq 0) {
+    [string]$localBranch = Get-OptionsForChoosingLocalBranch "Delete branch" "Please choose a branch to delete"
+    if ($localBranch) {
+      Invoke-GitBranchDelete $localBranch
+    }
   }
   else {
-    $message = "Do you want to run 'git branch -D $branch'?"
-    $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Yes"
-    $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "No"
-    $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
-    $choice = $host.ui.PromptForChoice($result[0], $message, $options, 1)
-    if ($choice -eq 0) {
-      git branch -D $branch
+    for ($i = 0; $i -lt $args.Count; $i++) {
+      $branch = $args[$i]
+
+      Write-Host "Running 'git branch -d $branch'..." -ForegroundColor Green
+
+      $result = (git branch -d $branch 2>&1)
+
+      if ($result -isnot [array] -or !$result[1].ToString().Contains("git branch -D $branch")) {
+        $result
+      }
+      else {
+        $message = "Do you want to run 'git branch -D $branch'?"
+        $yes = New-Object System.Management.Automation.Host.ChoiceDescription "&Yes", "Yes"
+        $no = New-Object System.Management.Automation.Host.ChoiceDescription "&No", "No"
+        $options = [System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
+        $choice = $host.ui.PromptForChoice($result[0], $message, $options, 1)
+        if ($choice -eq 0) {
+          git branch -D $branch
+        }
+      }
     }
   }
 }
