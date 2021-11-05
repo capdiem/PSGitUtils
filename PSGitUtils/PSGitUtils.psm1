@@ -403,7 +403,7 @@ function Format-GitCommitMessage {
   [int]$step = 1
 
   if ($config.Emoji -or $config.Type) {
-    $typeIndex = (Get-Host).UI.PromptForChoice("Committing messages...", "${step}. Please choose a type for this changes that you commit:", $typeOptions, 8)
+    $typeIndex = (Get-Host).UI.PromptForChoice("Committing messages...", "${step}. Please choose a type for this changes that you commit:", $typeOptions, 7)
     $step++
 
     Write-Host
@@ -418,7 +418,8 @@ function Format-GitCommitMessage {
             0 { $emoji = $new }
             1 { $emoji = $boom }
             2 { $emoji = $tada }
-            Default { }
+            3 { $emoji = $construction }
+            4 { $emoji = $children_crossing }
           }
         }
 
