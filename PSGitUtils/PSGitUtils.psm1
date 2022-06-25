@@ -253,13 +253,62 @@ function Get-OptionsForChoosingLocalBranch {
   return $localBranches[$choice]
 }
 
+function Get-OptionsForChoosingLocalOrOriginBranch {
+  param (
+      [string]$title = 'Choose branch',
+      [string]$message = 'Please choose a branch'
+  )
+  [System.Management.Automation.Host.ChoiceDescription[]]$branchOptions = @()
+  [string[]]$localBranches = Get-GitLocalBranches
+  [string[]]$originBranches = Get-GitOriginBranches -onlyName
+  [string[]]$branches = $localBranches + $originBranches | Select-Object -Unique
+  [char[]]$existChars = @('q')
+
+  for ($i = 0; $i -lt $branches.Count; $i++) {
+    $branch = $branches[$i]
+
+    [int]$branchCharIndex = -1
+
+    [string[]]$types = "feature","bugfix","hotfix","experimental","build","release","merge"
+
+    $type = $types.Where({$branch.StartsWith($_)})[0]
+    $typeLength = 0
+    if ($null -ne $type) {
+      $typeLength = $type.Length + 1
+    }
+
+    [char[]]$branchChars = $branch.Substring($typeLength).ToCharArray()
+    for ($j = 0; $j -lt $branchChars.Count; $j++) {
+      $char = $branchChars[$j]
+
+      if (!$existChars.Contains($char)) {
+        $branchCharIndex = $j
+        $existChars += $char
+        break
+      }
+    }
+
+    if ($branchCharIndex -ne -1) {
+      $branch = $branch.Insert(($branchCharIndex + $typeLength), '&')
+    }
+
+    $branchOptions += $branch
+  }
+
+  $branchOptions += "&quit"
+
+  $choice = $host.UI.PromptForChoice($title, $message, $branchOptions, $branchOptions.Count - 1)
+
+  return $branches[$choice]
+}
+
 ## git checkout [$args]
 function Invoke-GitCheckout {
   if ($args.Count -eq 0) {
-    $localBranch = Get-OptionsForChoosingLocalBranch "Switch branch" "Please choose a branch to switch"
+    $branch = Get-OptionsForChoosingLocalOrOriginBranch "Switch branch" "Please choose a branch to switch"
 
-    if ($localBranch) {
-      git checkout $localBranch
+    if ($branch) {
+      git checkout $branch
     }
   }
   else {
