@@ -273,7 +273,7 @@ function Get-OptionsForChoosingLocalOrOriginBranch {
 
     $type = $types.Where({$branch.StartsWith($_)})[0]
     $typeLength = 0
-    if ($null -ne $type) {
+    if ($type) {
       $typeLength = $type.Length + 1
     }
 
@@ -363,15 +363,10 @@ function Invoke-GitCheckoutNewBranch {
 
   $typeIndex = (Get-Host).UI.PromptForChoice("Creating a new branch and checkout to...", "${step}. Please choose a type for the new branch", $branchTypeOptions, 7)
 
-  switch ($typeIndex) {
-    0 { $branch = "feature/$branch" }
-    1 { $branch = "bugfix/$branch" }
-    2 { $branch = "hotfix/$branch" }
-    3 { $branch = "experimental/$branch" }
-    4 { $branch = "build/$branch" }
-    5 { $branch = "release/$branch" }
-    6 { $branch = "merge/$branch" }
-    Default {}
+  [string[]]$types = "feature","bugfix","hotfix","experimental","build","release","merge"
+  [string]$type = $types[$typeIndex]
+  if ($type) {
+    $branch = $type + "/" + $branch
   }
 
   Write-Host
@@ -380,11 +375,19 @@ function Invoke-GitCheckoutNewBranch {
   [System.Management.Automation.Host.ChoiceDescription[]]$originBranchOptions = @()
   [string[]]$originBranches = Get-GitOriginBranches -onlyName
   [char[]]$existChars = @('n')
+
   for ($i = 0; $i -lt $originBranches.Count; $i++) {
     $originBranch = $originBranches[$i]
 
     [int]$originBranchCharIndex = -1
-    [char[]]$originBranchChars = $originBranch.ToCharArray()
+
+    $type = $types.Where({$originBranch.StartsWith($_)})[0]
+    $typeLength = 0
+    if ($type) {
+      $typeLength = $type.Length + 1
+    }
+
+    [char[]]$originBranchChars = $originBranch.Substring($typeLength).ToCharArray()
     for ($j = 0; $j -lt $originBranchChars.Count; $j++) {
       $char = $originBranchChars[$j]
 
@@ -396,7 +399,8 @@ function Invoke-GitCheckoutNewBranch {
     }
 
     if ($originBranchCharIndex -ne -1) {
-      $originBranch = $originBranch.Insert($originBranchCharIndex, '&')
+      Write-Host $originBranchCharIndex $typeLength $originBranch
+      $originBranch = $originBranch.Insert(($originBranchCharIndex + $typeLength), '&')
     }
 
     $item = 'origin/' + $originBranch
