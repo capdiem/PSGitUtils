@@ -68,14 +68,13 @@ $dicts = @(
 )
 
 $typeOptions = [System.Management.Automation.Host.ChoiceDescription[]] (
-  (New-Object System.Management.Automation.Host.ChoiceDescription "&feat", "New features."),
+  (New-Object System.Management.Automation.Host.ChoiceDescription "&feat", "New features or updates."),
   (New-Object System.Management.Automation.Host.ChoiceDescription "fi&x", "Bug fix."),
   (New-Object System.Management.Automation.Host.ChoiceDescription "&docs", "Changes to documentation."),
   (New-Object System.Management.Automation.Host.ChoiceDescription "&style", "Formatting, missing semi clons, etc. No production code change."),
   (New-Object System.Management.Automation.Host.ChoiceDescription "&refactor", "Refactoring production code."),
   (New-Object System.Management.Automation.Host.ChoiceDescription "&test", "Adding missing tests, refactoring tests; no production code change."),
   (New-Object System.Management.Automation.Host.ChoiceDescription "&chore", "Updating grunt tasks etc; no production code change."),
-  (New-Object System.Management.Automation.Host.ChoiceDescription "&emoji", "Other emojis but no type is required(e.g.: working,)."),
   (New-Object System.Management.Automation.Host.ChoiceDescription "&notype", "No type.")
 )
 
@@ -93,7 +92,9 @@ $branchTypeOptions = [System.Management.Automation.Host.ChoiceDescription[]] (
 $featOptions = [System.Management.Automation.Host.ChoiceDescription[]] @(
   "$new(New &feat)",
   "$boom(&Break changes)"
-  "$tada(Beg&in a project)",
+  "$tada(Begin a &project)",
+  "$construction(&Work in progress)",
+  "$children_crossing(&Improve user experience / usability)",
   "(&No emoji)"
 )
 
@@ -144,11 +145,6 @@ $refactorOptions = [System.Management.Automation.Host.ChoiceDescription[]](
   "$fire(Remove code or &files)",
   "$coffin(Remove &dead code)",
   "(&No emoji)"
-)
-
-$emojiOptions = [System.Management.Automation.Host.ChoiceDescription[]](
-  "$construction(Work in &progress)",
-  "$children_crossing(Improve &user experience / usability)"
 )
 
 $global:GitUtilsConfig = @{
@@ -463,7 +459,7 @@ function Format-GitCommitMessage {
   [int]$step = 1
 
   if ($config.Emoji -or $config.Type) {
-    $typeIndex = (Get-Host).UI.PromptForChoice("Committing messages...", "${step}. Please choose a type for this changes that you commit:", $typeOptions, 8)
+    $typeIndex = (Get-Host).UI.PromptForChoice("Committing messages...", "${step}. Please choose a type for this changes that you commit:", $typeOptions, 7)
     $step++
 
     Write-Host
@@ -478,7 +474,8 @@ function Format-GitCommitMessage {
             0 { $emoji = $new }
             1 { $emoji = $boom }
             2 { $emoji = $tada }
-            Default { }
+            3 { $emoji = $construction }
+            4 { $emoji = $children_crossing }
           }
         }
 
@@ -561,15 +558,6 @@ function Format-GitCommitMessage {
         }
 
         $type = "chore"
-      }
-      7 {
-        if ($config.Emoji) {
-          $emojiIndex = (Get-Host).UI.PromptForChoice("", $choiceMessage, $emojiOptions, 0)
-          switch ($emojiIndex) {
-            0 { $emoji = $construction }
-            1 { $emoji = $children_crossing }
-          }
-        }
       }
     }
   }
