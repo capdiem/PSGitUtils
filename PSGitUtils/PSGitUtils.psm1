@@ -249,13 +249,62 @@ function Get-OptionsForChoosingLocalBranch {
   return $localBranches[$choice]
 }
 
+function Get-OptionsForChoosingLocalOrOriginBranch {
+  param (
+      [string]$title = 'Choose branch',
+      [string]$message = 'Please choose a branch'
+  )
+  [System.Management.Automation.Host.ChoiceDescription[]]$branchOptions = @()
+  [string[]]$localBranches = Get-GitLocalBranches
+  [string[]]$originBranches = Get-GitOriginBranches -onlyName
+  [string[]]$branches = $localBranches + $originBranches | Select-Object -Unique
+  [char[]]$existChars = @('q')
+
+  for ($i = 0; $i -lt $branches.Count; $i++) {
+    $branch = $branches[$i]
+
+    [int]$branchCharIndex = -1
+
+    [string[]]$types = "feature","bugfix","hotfix","experimental","build","release","merge"
+
+    $type = $types.Where({$branch.StartsWith($_)})[0]
+    $typeLength = 0
+    if ($type) {
+      $typeLength = $type.Length + 1
+    }
+
+    [char[]]$branchChars = $branch.Substring($typeLength).ToCharArray()
+    for ($j = 0; $j -lt $branchChars.Count; $j++) {
+      $char = $branchChars[$j]
+
+      if (!$existChars.Contains($char)) {
+        $branchCharIndex = $j
+        $existChars += $char
+        break
+      }
+    }
+
+    if ($branchCharIndex -ne -1) {
+      $branch = $branch.Insert(($branchCharIndex + $typeLength), '&')
+    }
+
+    $branchOptions += $branch
+  }
+
+  $branchOptions += "&quit"
+
+  $choice = $host.UI.PromptForChoice($title, $message, $branchOptions, $branchOptions.Count - 1)
+
+  return $branches[$choice]
+}
+
 ## git checkout [$args]
 function Invoke-GitCheckout {
   if ($args.Count -eq 0) {
-    $localBranch = Get-OptionsForChoosingLocalBranch "Switch branch" "Please choose a branch to switch"
+    $branch = Get-OptionsForChoosingLocalOrOriginBranch "Switch branch" "Please choose a branch to switch"
 
-    if ($localBranch) {
-      git checkout $localBranch
+    if ($branch) {
+      git checkout $branch
     }
   }
   else {
@@ -310,15 +359,10 @@ function Invoke-GitCheckoutNewBranch {
 
   $typeIndex = (Get-Host).UI.PromptForChoice("Creating a new branch and checkout to...", "${step}. Please choose a type for the new branch", $branchTypeOptions, 7)
 
-  switch ($typeIndex) {
-    0 { $branch = "feature/$branch" }
-    1 { $branch = "bugfix/$branch" }
-    2 { $branch = "hotfix/$branch" }
-    3 { $branch = "experimental/$branch" }
-    4 { $branch = "build/$branch" }
-    5 { $branch = "release/$branch" }
-    6 { $branch = "merge/$branch" }
-    Default {}
+  [string[]]$types = "feature","bugfix","hotfix","experimental","build","release","merge"
+  [string]$type = $types[$typeIndex]
+  if ($type) {
+    $branch = $type + "/" + $branch
   }
 
   Write-Host
@@ -327,11 +371,19 @@ function Invoke-GitCheckoutNewBranch {
   [System.Management.Automation.Host.ChoiceDescription[]]$originBranchOptions = @()
   [string[]]$originBranches = Get-GitOriginBranches -onlyName
   [char[]]$existChars = @('n')
+
   for ($i = 0; $i -lt $originBranches.Count; $i++) {
     $originBranch = $originBranches[$i]
 
     [int]$originBranchCharIndex = -1
-    [char[]]$originBranchChars = $originBranch.ToCharArray()
+
+    $type = $types.Where({$originBranch.StartsWith($_)})[0]
+    $typeLength = 0
+    if ($type) {
+      $typeLength = $type.Length + 1
+    }
+
+    [char[]]$originBranchChars = $originBranch.Substring($typeLength).ToCharArray()
     for ($j = 0; $j -lt $originBranchChars.Count; $j++) {
       $char = $originBranchChars[$j]
 
@@ -343,7 +395,8 @@ function Invoke-GitCheckoutNewBranch {
     }
 
     if ($originBranchCharIndex -ne -1) {
-      $originBranch = $originBranch.Insert($originBranchCharIndex, '&')
+      Write-Host $originBranchCharIndex $typeLength $originBranch
+      $originBranch = $originBranch.Insert(($originBranchCharIndex + $typeLength), '&')
     }
 
     $item = 'origin/' + $originBranch
@@ -371,6 +424,9 @@ function Invoke-GitReset { git reset $args }
 
 ## git diff
 function Invoke-GitDiff { git diff $args }
+
+## git diff
+function Invoke-GitDiffCached { git diff --cached }
 
 <#
 .SYNOPSIS
@@ -530,8 +586,8 @@ function Format-GitCommitMessage {
       $newMessage += $type
     }
 
-    if ($config.Scope -and ![string]::IsNullOrEmpty($scope)) {
-      $newMessage += "(" + $scope + ")"
+    if ($config.Emoji -and ![string]::IsNullOrEmpty($emoji)) {
+      $newMessage += $emoji + " "
     }
   }
 
@@ -652,10 +708,11 @@ Set-Alias ggpl Invoke-GitPull
 Set-Alias ggps Invoke-GitPush
 Set-Alias ggrst Invoke-GitReset
 Set-Alias ggd Invoke-GitDiff
+Set-Alias ggdc Invoke-GitDiffCached
 Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 Set-Alias ggbs Remove-LocalBranchesThatNoLongerExistOnRemote
 
-Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitBranchDelete, Invoke-GitStatus, Invoke-GitCheckout, Get-GitOriginBranches, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Remove-LocalBranchesThatNoLongerExistOnRemote
-Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggbd, ggs, ggck, ggckb, ggpl, ggps, ggrst, ggd, ggbs
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitBranchDelete, Invoke-GitStatus, Invoke-GitCheckout, Get-GitOriginBranches, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Invoke-GitDiffCached, Remove-LocalBranchesThatNoLongerExistOnRemote
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggbd, ggs, ggck, ggckb, ggpl, ggps, ggrst, ggd, ggdc, ggbs
 Export-ModuleMember -Variable $global:GitUtilsConfig
