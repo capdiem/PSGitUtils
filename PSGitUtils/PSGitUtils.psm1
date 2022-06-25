@@ -425,6 +425,9 @@ function Invoke-GitReset { git reset $args }
 ## git diff
 function Invoke-GitDiff { git diff $args }
 
+## git diff
+function Invoke-GitDiffCached { git diff --cached }
+
 <#
 .SYNOPSIS
 Try to delete the local branches that no longer exist on the remote
@@ -713,10 +716,11 @@ Set-Alias ggpl Invoke-GitPull
 Set-Alias ggps Invoke-GitPush
 Set-Alias ggrst Invoke-GitReset
 Set-Alias ggd Invoke-GitDiff
+Set-Alias ggdc Invoke-GitDiffCached
 Set-Alias ggl Invoke-GitHistory
 Set-Alias emojify Invoke-Emojify
 Set-Alias ggbs Remove-LocalBranchesThatNoLongerExistOnRemote
 
-Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitBranchDelete, Invoke-GitStatus, Invoke-GitCheckout, Get-GitOriginBranches, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Remove-LocalBranchesThatNoLongerExistOnRemote
-Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggbd, ggs, ggck, ggckb, ggpl, ggps, ggrst, ggd, ggbs
+Export-ModuleMember -Function Invoke-GitCommit, Format-GitCommitMessage, Invoke-GitHistory, Invoke-Emojify, Invoke-GitAdd, Invoke-GitBranch, Invoke-GitBranchDelete, Invoke-GitStatus, Invoke-GitCheckout, Get-GitOriginBranches, Invoke-GitCheckoutNewBranch, Invoke-GitPull, Invoke-GitPush, Invoke-GitReset, Invoke-GitDiff, Invoke-GitDiffCached, Remove-LocalBranchesThatNoLongerExistOnRemote
+Export-ModuleMember -Alias  ggc, ggl, emojify, gga, ggb, ggbd, ggs, ggck, ggckb, ggpl, ggps, ggrst, ggd, ggdc, ggbs
 Export-ModuleMember -Variable $global:GitUtilsConfig
