@@ -598,8 +598,8 @@ function Format-GitCommitMessage {
       $newMessage += $type
     }
 
-    if ($config.Scope -and ![string]::IsNullOrEmpty($scope)) {
-      $newMessage += "(" + $scope + ")"
+    if ($config.Emoji -and ![string]::IsNullOrEmpty($emoji)) {
+      $newMessage += $emoji + " "
     }
   }
 
