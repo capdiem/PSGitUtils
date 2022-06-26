@@ -395,7 +395,6 @@ function Invoke-GitCheckoutNewBranch {
     }
 
     if ($originBranchCharIndex -ne -1) {
-      Write-Host $originBranchCharIndex $typeLength $originBranch
       $originBranch = $originBranch.Insert(($originBranchCharIndex + $typeLength), '&')
     }
 
