@@ -260,6 +260,8 @@ function Get-OptionsForChoosingLocalOrOriginBranch {
   [string[]]$branches = $localBranches + $originBranches | Select-Object -Unique
   [char[]]$existChars = @('q')
 
+  $charBranchDict = @() # char:branch key:value
+
   for ($i = 0; $i -lt $branches.Count; $i++) {
     $branch = $branches[$i]
 
@@ -286,10 +288,15 @@ function Get-OptionsForChoosingLocalOrOriginBranch {
 
     if ($branchCharIndex -ne -1) {
       $branch = $branch.Insert(($branchCharIndex + $typeLength), '&')
+      Write-Host $existChars
+      $charBranchDict += @{k = $existChars[-1]; v = $branch }
+    } else {
+      $branchOptions += $branch
     }
-
-    $branchOptions += $branch
   }
+
+  # sort the branch options
+  $branchOptions = ($charBranchDict | Sort-Object -Property k | Select-Object -Property v).v + $branchOptions
 
   $branchOptions += "&quit"
 
