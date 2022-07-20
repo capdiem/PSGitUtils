@@ -302,7 +302,16 @@ function Get-OptionsForChoosingLocalOrOriginBranch {
 
   $choice = $host.UI.PromptForChoice($title, $message, $branchOptions, $branchOptions.Count - 1)
 
-  return $branches[$choice]
+  if ($choice -eq $branchOptions.Count - 1) {
+    return
+  }
+
+  $branch = $branchOptions[$choice].Label
+  if ($branch.Contains('&')) {
+    $branch = $branch.Replace('&', '')
+  }
+
+  return $branch
 }
 
 ## git checkout [$args]
