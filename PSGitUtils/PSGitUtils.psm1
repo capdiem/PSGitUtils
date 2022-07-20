@@ -288,7 +288,6 @@ function Get-OptionsForChoosingLocalOrOriginBranch {
 
     if ($branchCharIndex -ne -1) {
       $branch = $branch.Insert(($branchCharIndex + $typeLength), '&')
-      Write-Host $existChars
       $charBranchDict += @{k = $existChars[-1]; v = $branch }
     } else {
       $branchOptions += $branch
