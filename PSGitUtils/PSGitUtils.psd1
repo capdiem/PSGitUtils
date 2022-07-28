@@ -12,7 +12,7 @@
   RootModule        = 'PSGitUtils.psm1'
 
   # Version number of this module.
-  ModuleVersion     = '1.13.2'
+  ModuleVersion     = '1.13.3'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()

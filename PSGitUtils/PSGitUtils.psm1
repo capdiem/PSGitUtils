@@ -387,6 +387,8 @@ function Invoke-GitCheckoutNewBranch {
   [string[]]$originBranches = Get-GitOriginBranches -onlyName
   [char[]]$existChars = @('n')
 
+  $charBranchDict = @() # char:branch key:value
+
   for ($i = 0; $i -lt $originBranches.Count; $i++) {
     $originBranch = $originBranches[$i]
 
@@ -411,17 +413,27 @@ function Invoke-GitCheckoutNewBranch {
 
     if ($originBranchCharIndex -ne -1) {
       $originBranch = $originBranch.Insert(($originBranchCharIndex + $typeLength), '&')
+      $charBranchDict += @{k = $existChars[-1]; v = 'origin/' + $originBranch }
+    } else {
+      $item = 'origin/' + $originBranch
+      $originBranchOptions += $item
     }
-
-    $item = 'origin/' + $originBranch
-    $originBranchOptions += $item
   }
+
+  $originBranchOptions = ($charBranchDict | Sort-Object -Property k | Select-Object -Property v).v + $originBranchOptions
+
   $originBranchOptions += "&notrack";
 
   $originBranchIndex = (Get-Host).UI.PromptForChoice("", "${step}. Please choose a remote branch to track", $originBranchOptions, $originBranchOptions.Count - 1)
 
-  if ($originBranchIndex -lt $originBranches.Count) {
-    $startPoint = "origin/$($originBranches[$originBranchIndex])"
+  if ($originBranchIndex -eq $originBranchOptions.Count - 1) {
+    git checkout -b $branch
+    return
+  }
+
+  $startPoint = $originBranchOptions[$originBranchIndex].Label
+  if ($startPoint.Contains('&')) {
+    $startPoint = $startPoint.Replace('&', '')
   }
 
   git checkout -b $branch $startPoint
