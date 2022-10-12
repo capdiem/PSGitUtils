@@ -387,12 +387,22 @@ function Invoke-GitCheckoutNewBranch {
 
   [System.Management.Automation.Host.ChoiceDescription[]]$originBranchOptions = @()
   [string[]]$originBranches = Get-GitOriginBranches -onlyName
-  [char[]]$existChars = @('n')
+  [char]$mainChar = 'm'
+  [char[]]$existChars = @('n', $mainChar)
 
   $charBranchDict = @() # char:branch key:value
 
-  for ($i = 0; $i -lt $originBranches.Count; $i++) {
-    $originBranch = $originBranches[$i]
+  if ($originBranches.Contains('main')) {
+    $charBranchDict += @{k = $mainChar; v = 'origin/&main'}
+  }
+  elseif ($originBranches.Contains('master')) {
+    $charBranchDict += @{k = $mainChar; v = 'origin/&master'}
+  }
+
+  $filteredOriginBranches = $originBranches.Where({"main,master".Contains($_) -eq $false})
+
+  for ($i = 0; $i -lt $filteredOriginBranches.Count; $i++) {
+    $originBranch = $filteredOriginBranches[$i]
 
     [int]$originBranchCharIndex = -1
 
@@ -402,7 +412,7 @@ function Invoke-GitCheckoutNewBranch {
       $typeLength = $type.Length + 1
     }
 
-    [char[]]$originBranchChars = $originBranch.Substring($typeLength).ToCharArray()
+    [char[]]$originBranchChars = $originBranch.Substring($typeLength).ToLower().ToCharArray()
     for ($j = 0; $j -lt $originBranchChars.Count; $j++) {
       $char = $originBranchChars[$j]
 
