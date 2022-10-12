@@ -148,10 +148,12 @@ $refactorOptions = [System.Management.Automation.Host.ChoiceDescription[]](
 )
 
 $global:GitUtilsConfig = @{
-  Emoji      = $true;
-  Type       = $true;
-  Scope      = $true;
-  EmojiFirst = $false; # determine whether placing the <emoji> in front of <type>
+  Emoji          = $true;
+  Type           = $true;
+  Scope          = $true;
+  EmojiFirst     = $false; # determine whether placing the <emoji> in front of <type>
+  UppercaseType  = $false;
+  UppercaseScope = $false;
 }
 $config = $global:GitUtilsConfig
 
@@ -597,6 +599,14 @@ function Format-GitCommitMessage {
   Write-Host
 
   [string]$newMessage
+
+  if ($config.UppercaseType) {
+    $type = $type.ToUpper()
+  }
+
+  if ($config.UppercaseScope) {
+    $scope = $scope.ToUpper()
+  }
 
   if ($config.EmojiFirst) {
     if ($config.Emoji -and ![string]::IsNullOrEmpty($emoji)) {
