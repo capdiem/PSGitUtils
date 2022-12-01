@@ -674,9 +674,9 @@ function Invoke-GitCommit {
     $params.Add("--no-verify")
   }
 
-  $newMessage = Format-GitCommitMessage $message
+  [string]$newMessage = Format-GitCommitMessage $message
 
-  git commit -m $newMessage $params
+  git commit -m $newMessage.Trim() $params
 }
 
 <#
