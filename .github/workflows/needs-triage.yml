@@ -6,7 +6,7 @@ jobs:
   triage:
     runs-on: ubuntu-latest
     steps:
-      - uses: capdiem/needs-triage@v1
+      - uses: capdiem/needs-triage@v1.0.0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           eventType: ${{ github.event.action }}
