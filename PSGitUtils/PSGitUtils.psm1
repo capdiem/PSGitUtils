@@ -254,13 +254,18 @@ function Get-OptionsForChoosingLocalBranch {
 function Get-OptionsForChoosingLocalOrOriginBranch {
   param (
       [string]$title = 'Choose branch',
-      [string]$message = 'Please choose a branch'
+      [string]$message = 'Please choose a branch',
+      [string]$pattern
   )
   [System.Management.Automation.Host.ChoiceDescription[]]$branchOptions = @()
   [string[]]$localBranches = Get-GitLocalBranches
   [string[]]$originBranches = Get-GitOriginBranches -onlyName
   [string[]]$branches = $localBranches + $originBranches | Select-Object -Unique
   [char[]]$existChars = @('q')
+
+  if ($pattern) {
+    $branches = $branches | where { $_ -match $pattern }
+  }
 
   $charBranchDict = @() # char:branch key:value
 
@@ -319,6 +324,15 @@ function Get-OptionsForChoosingLocalOrOriginBranch {
 function Invoke-GitCheckout {
   if ($args.Count -eq 0) {
     $branch = Get-OptionsForChoosingLocalOrOriginBranch "Switch branch" "Please choose a branch to switch"
+
+    if ($branch) {
+      git checkout $branch
+    }
+  }
+  # Invoke-GitCheckout -s key
+  elseif ($args.Count -eq 2 -and $args[0] -eq "-s") {
+    [string]$pattern = $args[1]
+    $branch = Get-OptionsForChoosingLocalOrOriginBranch "Switch branch" "Please choose a branch to switch" $pattern
 
     if ($branch) {
       git checkout $branch
