@@ -329,17 +329,17 @@ function Invoke-GitCheckout {
       git checkout $branch
     }
   }
-  # Invoke-GitCheckout -s key
-  elseif ($args.Count -eq 2 -and $args[0] -eq "-s") {
-    [string]$pattern = $args[1]
-    $branch = Get-OptionsForChoosingLocalOrOriginBranch "Switch branch" "Please choose a branch to switch" $pattern
-
-    if ($branch) {
-      git checkout $branch
-    }
-  }
   else {
-    git checkout $args
+    $res = git checkout $args
+    if($res -eq $null) {
+      Write-Host "Unable to switch to branch $($args[0]), trying to search by matching operators..." -ForegroundColor Blue
+
+      $branch = Get-OptionsForChoosingLocalOrOriginBranch "Switch branch" "Please choose a branch to switch" $args[0]
+
+      if ($branch) {
+        git checkout $branch
+      }
+    }
   }
 }
 
